@@ -181,7 +181,7 @@ if __name__ == '__main__':
                         help='use pretrained word2vec embedding')
     parser.add_argument('--n_hidden', type=int, action='store', default=256,
                         help='the number of hidden units of LSTM')
-    parser.add_argument('--n_layer', type=int, action='store', default=1,
+    parser.add_argument('--n_layer', type=int, action='store', default=2,
                         help='the number of layers of LSTM')
     parser.add_argument('--no-bi', action='store_true',
                         help='disable bidirectional LSTM encoder')
@@ -189,7 +189,7 @@ if __name__ == '__main__':
     # length limit
     parser.add_argument('--max_art', type=int, action='store', default=100,
                         help='maximun words in a single article sentence')
-    parser.add_argument('--max_abs', type=int, action='store', default=30,
+    parser.add_argument('--max_abs', type=int, action='store', default=50,
                         help='maximun words in a single abstract sentence')
     # training options
     parser.add_argument('--lr', type=float, action='store', default=1e-3,
