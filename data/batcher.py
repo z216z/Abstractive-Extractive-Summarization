@@ -124,6 +124,9 @@ def batchify_fn(pad, start, end, data, cuda=True):
     sources, targets = tuple(map(list, unzip(data)))
 
     src_lens = [len(src) for src in sources]
+    #uncomment in case of addition of "SOS" and "EOS". After that, comment successive 2 lines
+    #tar_ins = [[start] + tgt[1:-1] for tgt in targets]
+    #targets = [tgt[1:-1] + [end] for tgt in targets]
     tar_ins = [[start] + tgt for tgt in targets]
     targets = [tgt + [end] for tgt in targets]
 
