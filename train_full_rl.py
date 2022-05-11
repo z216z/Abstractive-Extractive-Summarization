@@ -211,7 +211,7 @@ if __name__ == '__main__':
                         help='ckeckpoint used decode')
 
     # training options
-    parser.add_argument('--reward', action='store', default='rouge-l',
+    parser.add_argument('--reward', action='store', default='rouge-2',
                         help='reward function for RL')
     parser.add_argument('--lr', type=float, action='store', default=1e-4,
                         help='learning rate')
