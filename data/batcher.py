@@ -146,6 +146,9 @@ def batchify_fn_copy(pad, start, end, data, cuda=True):
     src_lens = [len(src) for src in sources]
     sources = [src for src in sources]
     ext_srcs = [ext for ext in ext_srcs]
+    #Un-comment in case of <SOS> and <EOS> and comment successive 2 lines.
+    #tar_ins = [[start] + tgt[1:-1] for tgt in tar_ins]
+    #targets = [tgt[1:-1] + [end] for tgt in targets]
 
     tar_ins = [[start] + tgt for tgt in tar_ins]
     targets = [tgt + [end] for tgt in targets]
