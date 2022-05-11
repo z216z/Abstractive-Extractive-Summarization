@@ -225,13 +225,13 @@ if __name__ == '__main__':
                         help='stop coefficient for rouge-1')
     parser.add_argument('--clip', type=float, action='store', default=2.0,
                         help='gradient clipping')
-    parser.add_argument('--batch', type=int, action='store', default=32,
+    parser.add_argument('--batch', type=int, action='store', default=16,
                         help='the training batch size')
     parser.add_argument(
         '--ckpt_freq', type=int, action='store', default=1000,
         help='number of update steps for checkpoint and validation'
     )
-    parser.add_argument('--patience', type=int, action='store', default=3,
+    parser.add_argument('--patience', type=int, action='store', default=5,
                         help='patience for early stopping')
     parser.add_argument('--no-cuda', action='store_true',
                         help='disable GPU training')
