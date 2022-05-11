@@ -145,3 +145,4 @@ class MultiLayerLSTMCells(StackedLSTMCells):
             cell.bias_ih.data.copy_(getattr(lstm, 'bias_ih_l{}'.format(i)))
             cell.bias_hh.data.copy_(getattr(lstm, 'bias_hh_l{}'.format(i)))
         return lstm_cell
+#note: the models stays the same
