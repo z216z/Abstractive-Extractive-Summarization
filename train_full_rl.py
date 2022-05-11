@@ -29,7 +29,8 @@ from metric import compute_rouge_l, compute_rouge_n,avg_rouges
 
 
 MAX_ABS_LEN = 30
-
+#TODO: Pass DATA_DIR by argparser and set max_sent(maximum number of sentences in a document). 
+#TODO: Edit get_item
 try:
     DATA_DIR = os.environ['DATA']
 except KeyError:
