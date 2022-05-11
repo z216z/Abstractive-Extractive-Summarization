@@ -36,7 +36,7 @@ def make_embedding(id2word, w2v_file, initializer=None):
     attrs = basename(w2v_file).split('.')  #word2vec.{dim}d.{vsize}k.bin
     w2v = gensim.models.Word2Vec.load(w2v_file).wv
     vocab_size = len(id2word)
-    emb_dim = int(attrs[-3][:-1])
+    emb_dim = 300 #int(attrs[-3][:-1])
     embedding = nn.Embedding(vocab_size, emb_dim).weight
     if initializer is not None:
         initializer(embedding)
