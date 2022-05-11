@@ -93,7 +93,7 @@ class CopySumm(Seq2SeqSumm):
             if tok[0, 0].item() >= vsize:
                 tok[0, 0] = unk
         return outputs, attns
-
+    #maybe following method is uselses
     def batched_beamsearch(self, article, art_lens,
                            extend_art, extend_vsize,
                            go, eos, unk, max_len, beam_size, diverse=1.0):
