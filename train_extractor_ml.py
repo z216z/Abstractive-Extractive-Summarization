@@ -121,6 +121,9 @@ def configure_training(net_type, opt, lr, clip_grad, lr_decay, batch_size):
 
 
 def main(args):
+    
+    
+    ## TODO: aggiustare in funzione di Word2Vec e di dove vogliamo metterlo ##
     assert args.net_type in ['ff', 'rnn']
     # create data batcher, vocabulary
     # batcher
@@ -188,9 +191,9 @@ if __name__ == '__main__':
     # model options
     parser.add_argument('--net-type', action='store', default='rnn',
                         help='model type of the extractor (ff/rnn)')
-    parser.add_argument('--vsize', type=int, action='store', default=30000,
+    parser.add_argument('--vsize', type=int, action='store', default=20000,
                         help='vocabulary size')
-    parser.add_argument('--emb_dim', type=int, action='store', default=128,
+    parser.add_argument('--emb_dim', type=int, action='store', default=300,
                         help='the dimension of word embedding')
     parser.add_argument('--w2v', action='store',
                         help='use pretrained word2vec embedding')
@@ -198,7 +201,7 @@ if __name__ == '__main__':
                         help='the number of hidden units of Conv')
     parser.add_argument('--lstm_hidden', type=int, action='store', default=256,
                         help='the number of hidden units of lSTM')
-    parser.add_argument('--lstm_layer', type=int, action='store', default=1,
+    parser.add_argument('--lstm_layer', type=int, action='store', default=2,
                         help='the number of layers of LSTM Encoder')
     parser.add_argument('--no-bi', action='store_true',
                         help='disable bidirectional LSTM encoder')
@@ -217,7 +220,7 @@ if __name__ == '__main__':
                         help='patience for learning rate decay')
     parser.add_argument('--clip', type=float, action='store', default=2.0,
                         help='gradient clipping')
-    parser.add_argument('--batch', type=int, action='store', default=32,
+    parser.add_argument('--batch', type=int, action='store', default=16,
                         help='the training batch size')
     parser.add_argument(
         '--ckpt_freq', type=int, action='store', default=3000,
