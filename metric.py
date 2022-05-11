@@ -125,7 +125,7 @@ def compute_rouge_l_summ(summs, refs, mode='f'):
             score = f_score
     return score
 
-
+#Probably useless from now on
 try:
     _METEOR_PATH = os.environ['METEOR']
 except KeyError:
