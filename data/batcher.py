@@ -164,6 +164,9 @@ def batchify_fn_extract_ptr(pad, data, cuda=True):
 
     src_nums = list(map(len, source_lists))
     sources = list(map(pad_batch_tensorize(pad=pad, cuda=cuda), source_lists))
+    #maybe the previous line is a bug(?)
+    #sources = [pad_batch_tensorize(source,pad=pad,cuda=cuda) for source in source_lists]
+   
 
     # PAD is -1 (dummy extraction index) for using sequence loss
     target = pad_batch_tensorize(targets, pad=-1, cuda=cuda)
