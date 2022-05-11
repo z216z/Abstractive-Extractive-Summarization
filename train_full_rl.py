@@ -25,7 +25,7 @@ from rl import get_grad_fn
 from rl import A2CPipeline
 from decoding import load_best_ckpt
 from decoding import Abstractor, ArticleBatcher
-from metric import compute_rouge_l, compute_rouge_n,avg_rouges
+from metric import compute_rouge_l, compute_rouge_n
 
 
 MAX_ABS_LEN = 30
@@ -137,7 +137,7 @@ def train(args):
     )
     train_batcher, val_batcher = build_batchers(args.batch)
     if args.reward=="avg_rouges":
-        reward_fn=avg_rouges
+        reward_fn=(compute_rouge_l+compute_rouge_n(n=1)+compute_rouge_n(n=2))/3
 
     if args.reward == 'rouge-l':
         reward_fn = compute_rouge_l
