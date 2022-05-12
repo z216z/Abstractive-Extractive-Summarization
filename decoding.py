@@ -76,6 +76,8 @@ class Abstractor(object):
                 if not w in ext_word2id:
                     ext_word2id[w] = len(ext_word2id)
                     ext_id2word[len(ext_id2word)] = w
+        # if we choose to use <SOS> and <EOS> we should update raw_articles_sents->raw_article_sents = [raw_article_sent[1:] for raw_article_sent in raw_article_sents] a
+        #and articles-> articles = [article[1:] for article in articles]
         articles = conver2id(UNK, self._word2id, raw_article_sents)
         art_lens = [len(art) for art in articles]
         article = pad_batch_tensorize(articles, PAD, cuda=False
