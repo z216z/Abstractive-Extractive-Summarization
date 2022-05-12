@@ -38,7 +38,7 @@ def compute_rouge_n(output, reference, n=1, mode='f'):
             score = f_score
     return score
 
-
+#following methods could be useful in pre-processing(?)
 def _lcs_dp(a, b):
     """ compute the len dp of lcs"""
     dp = [[0 for _ in range(0, len(b)+1)]
