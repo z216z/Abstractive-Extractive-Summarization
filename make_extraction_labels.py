@@ -18,7 +18,7 @@ except KeyError:
     print('please use environment variable to specify data directories')
 
 
-def _split_words(texts):
+def split_words(texts):
     return map(lambda t: t.split(), texts)
 
 
