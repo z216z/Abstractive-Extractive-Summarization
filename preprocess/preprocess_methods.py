@@ -16,9 +16,9 @@ def tokenize_sentence(sentence):
     return word_tokenize.tokenize(sentence)
 
 def tokenize_corpus(path_reports, path_corpus, start='<SOS>', end='<EOS>'):
-	with open(path_corpus, 'w') as fw:
-		for i, file_name enumerate(os.listdir(path_reports)):
-			with open(os.path.join(path_reports, file_name)) as fr:
+    with open(path_corpus, 'w') as fw:
+	for i, file_name enumerate(os.listdir(path_reports)):
+	    with open(os.path.join(path_reports, file_name)) as fr:
                 text = ''
                 for line in fr.readlines():
                     text += f'{line.strip()} '
