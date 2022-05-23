@@ -1,7 +1,8 @@
 import nltk
 import csv
+import re
+import os
 from nltk.tokenize import word_tokenize
-from gensim.corpora.dictionary import Dictionary
 
 nltk.download('punkt')
 with open('regex.csv') as csvfile:
