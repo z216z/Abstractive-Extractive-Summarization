@@ -3,7 +3,7 @@ import json
 import re
 import os
 from os.path import join
-
+import tarfile
 from torch.utils.data import Dataset
 
 
@@ -30,3 +30,13 @@ def _count_data(path):
     names = os.listdir(path)
     n_data = len(list(filter(match, names)))
     return n_data
+def extract_data(path, language):
+    full_path = os.path.join(path, language)
+    if os.path.exists(full_path):
+        for file_path, i in enumerate(os.listdir(full_path)):
+            if file_path.endswith('.tar') or file_path.endswith('.tar.gz'):
+                file = tarfile.open(file_path)
+                file.extractall(full_path)
+                file.close()
+    else:
+        print('The selected dataset is not available')
