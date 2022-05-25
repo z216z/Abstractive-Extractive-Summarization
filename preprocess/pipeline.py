@@ -17,8 +17,8 @@ def pipeline(DATASET_PATH):
     
     filter_corpus(CORPUS_TOKENIZED_PATH, CORPUS_FILTERED_PATH, common_bow)
     
-    for _, folder in enumerate(os.path.join(DATASET_PATH, 'training')): # folders = [annual_reports, golden_summaries]
-        for i, file_name in enumerate(os.path.join(DATASET_PATH, 'training', folder)):
+    for _, folder in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training'))): # folders = [annual_reports, golden_summaries]
+        for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training', folder))):
             tokenizer(os.path.join(DATASET_PATH, 'training', folder, file_name), os.path.join(DATASET_PATH, 'preprocess', folder, file_name), common_bow)
 
 if __name__ == '__main__':
