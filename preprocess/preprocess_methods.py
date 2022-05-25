@@ -37,7 +37,7 @@ def tokenizer(path_raw, path_tokenized, start='<SOS>', end='<EOS>', common_bow=N
                 if len(tokenized_sentence) > 0:
                     tokenized_sentence.insert(0, start)
                     tokenized_sentence.append(end)
-                    fw.write(' '.join(tokenized_sentence)+'\n')
+                    fw.write(' '.join(tokenized_sentence) + '\n')
 
 def generate_bow(path_corpus, vocab_limit=20000, start='<SOS>', end='<EOS>'):
     '''
