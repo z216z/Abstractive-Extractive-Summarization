@@ -30,16 +30,16 @@ def _count_data(path):
     names = os.listdir(path)
     n_data = len(list(filter(match, names)))
     return n_data
-# Method for extracting .tar and .tar.gz files
 
 
-def extract_data(path, language):
-    full_path = os.path.join(path, language)
+def extract_data(full_path):
     if os.path.exists(full_path):
-        for file_path, i in enumerate(os.listdir(full_path)):
+        for i, file_path in enumerate(os.listdir(full_path)):
             if file_path.endswith('.tar') or file_path.endswith('.tar.gz'):
+                file_path = os.path.join(full_path, file_path)
                 file = tarfile.open(file_path)
                 file.extractall(full_path)
                 file.close()
+                os.remove(file_path)
     else:
         print('The selected dataset is not available')
