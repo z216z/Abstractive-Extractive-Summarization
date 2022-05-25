@@ -7,8 +7,8 @@ from nltk.tokenize import word_tokenize
 nltk.download('punkt')
 start, end = '<SOS>', '<EOS>'
 tokens = [start, end]
-with open('regex.csv') as csvfile:
-    regex = csv.reader(csvfile)
+with open('preprocess/regex.csv') as csvfile:
+    regex = [r for r in csv.reader(csvfile)]
     
 def save_json(bow, file_path):
     json_file = open(file_path, "w")
@@ -30,7 +30,7 @@ def tokenize_sentence(sentence, common_bow=None):
         sentence = re.sub(row[0], row[1], sentence)
     if common_bow is not None:
         return filter_sentence(sentence, common_bow)
-    return word_tokenize.tokenize(sentence)
+    return word_tokenize(sentence)
 
 def filter_corpus(corpus, path_tokenized, common_bow):
     with open(path_tokenized, 'w') as fw:
@@ -56,8 +56,8 @@ def tokenizer(path_raw, path_tokenized, common_bow):
 
 def generate_corpus(path_raw, path_tokenized):
     with open(path_tokenized, 'w') as fw:
-        for _, folder in enumerate(os.path.join(path_raw)):
-            for i, file_name in enumerate(os.path.join(path_raw, folder):
+        for _, folder in enumerate(os.listdir(path_raw)):
+            for i, file_name in enumerate(os.listdir(os.path.join(path_raw, folder))):
                 with open(os.path.join(path_raw, folder, file_name)) as fr:
                     text = ''
                     for line in fr.readlines():
