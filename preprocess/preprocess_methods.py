@@ -28,7 +28,7 @@ def tokenize_sentence(sentence, common_bow=None):
     sentence = sentence.lower()
     for row in regex: 
         sentence = re.sub(row[0], row[1], sentence)
-    if common_bow not None:
+    if common_bow is not None:
         return filter_sentence(sentence, common_bow)
     return word_tokenize.tokenize(sentence)
 
