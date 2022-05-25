@@ -2,6 +2,7 @@ import nltk
 import csv
 import re
 import os
+import json
 from nltk.tokenize import word_tokenize
 
 nltk.download('punkt')
@@ -71,15 +72,15 @@ def generate_corpus(path_raw, path_tokenized):
                         fw.write(' '.join(tokenized_sentence) + '\n')
 
 def generate_bow(path_corpus, vocab_limit=20000):
-    '''
     with open(path_corpus) as fr:
         words = []
-        for line in fr.readlines().strip():
-            for w in line.split(' '):
+        for line in fr.readlines():
+            for w in line.strip().split(' '):
                 words.append(w)
     '''
     words = nltk.corpus.words(path_corpus)
     words = [w for w in words if w not in tokens]
+    '''
     bow = nltk.FreqDist(words)
     common_bow = dict(bow.most_common(vocab_limit))
     return bow, common_bow
