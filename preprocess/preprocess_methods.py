@@ -21,17 +21,17 @@ def filter_sentence(sentence, common_bow):
 
 def tokenizer(path_raw, path_tokenized, start='<SOS>', end='<EOS>', common_bow=None, regex=True):
     with open(path_tokenized, 'w') as fw:
-	    for i, file_name enumerate(os.listdir(path_raw)):
-	        with open(os.path.join(path_raw, file_name)) as fr:
+        for i, file_name enumerate(os.listdir(path_raw)):
+            with open(os.path.join(path_raw, file_name)) as fr:
                 text = ''
                 for line in fr.readlines():
                     text += f'{line.strip()} '
                 sentences = nltk.sent_tokenize(text)
             for s in sentences:
-		        if regex:
+                if regex:
                     tokenized_sentence = tokenize_sentence(s, common_bow)
                 elif common_bow not None and not regex:
-			        tokenized_sentence = filter_sentence(s, common_bow)
+                    tokenized_sentence = filter_sentence(s, common_bow)
                 else:
                     print("Error: Common bow parameter missing and control setting setted to false.")
                 if len(tokenized_sentence) > 0:
