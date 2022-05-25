@@ -10,17 +10,21 @@ def pipeline(DATASET_PATH):
     CORPUS_FILTERED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'corpus_filtered.txt')
     
     generate_corpus(os.path.join(DATASET_PATH, 'training'), CORPUS_TOKENIZED_PATH)
+    print('Corpus generated!')
     
     bow, common_bow = generate_bow(CORPUS_TOKENIZED_PATH)
     save_json(bow, os.path.join(DATASET_PATH, 'preprocess', 'bow.json'))
     save_json(common_bow, os.path.join(DATASET_PATH, 'preprocess', 'common_bow.json'))
+    print('BoW generated!')
     
     filter_corpus(CORPUS_TOKENIZED_PATH, CORPUS_FILTERED_PATH, common_bow)
+    print('Corpus filtered!')
     
     for _, folder in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training'))): # folders = [annual_reports, golden_summaries]
         for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training', folder))):
             tokenizer(os.path.join(DATASET_PATH, 'training', folder, file_name), os.path.join(DATASET_PATH, 'preprocess', folder, file_name), common_bow)
-
+        print(f'{folder} processed!')
+      
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description = 'Run the preprocess pipeline.'
