@@ -75,7 +75,7 @@ def generate_bow(path_corpus, vocab_limit=20000):
     with open(path_corpus) as fr:
         words = []
         for line in fr.readlines():
-            words = [w for w in line.strip().split(' ') if w not in tokens]
+            words += [w for w in line.strip().split(' ') if w not in tokens]
     '''
     words = nltk.corpus.words(path_corpus)
     words = [w for w in words if w not in tokens]
