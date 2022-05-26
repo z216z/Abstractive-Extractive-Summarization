@@ -3,6 +3,7 @@ import sys
 import json
 import argparse
 
+from make_extraction_labels import label
 from preprocess_methods import generate_corpus, tokenizer, generate_bow, filter_corpus, save_json, read_json
     
 def pipeline(DATASET_PATH):    
@@ -24,6 +25,9 @@ def pipeline(DATASET_PATH):
         for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training', folder))):
             tokenizer(os.path.join(DATASET_PATH, 'training', folder, file_name), os.path.join(DATASET_PATH, 'preprocess', folder, file_name), common_bow)
         print(f'{folder} processed!')
+        
+    label(DATASET_PATH)
+    print('Labels generated!')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
