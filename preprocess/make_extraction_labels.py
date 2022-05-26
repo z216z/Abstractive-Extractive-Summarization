@@ -49,7 +49,7 @@ def label(DATASET_PATH):
         extracted, scores = get_extract_label(art_sents, abs_sents)
         data['extracted'] = extracted
         data['score'] = scores
-        with open(os.path.join(path_labels, 'all', '{}.json'.format(file_name)), 'w') as f:
+        with open(os.path.join(path_labels, 'all', '{}.json'.format(file_name.split('.')[0])), 'w') as f:
             json.dump(data, f, indent=4)
 
 def split_data(DATASET_PATH):
