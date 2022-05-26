@@ -53,7 +53,7 @@ def label(DATASET_PATH):
             json.dump(data, f, indent=4)
 
 def split_data(DATASET_PATH):
-    path_labels = os.makedirs(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
+    path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels')
     file_names = os.listdir(os.path.join(path_labels, 'all'))
     X_train, X_test, y_train, y_test = train_test_split(file_names, file_names, test_size=0.3, random_state=42)
     for file_name in X_train:
