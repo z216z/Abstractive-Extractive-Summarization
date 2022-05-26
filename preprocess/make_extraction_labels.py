@@ -4,8 +4,9 @@ import json
 import shutil
 from sklearn.model_selection import train_test_split
 from cytoolz import compose
+import sys
+sys.path.insert(0,'..')
 from NLP_Project import metric
-from metric import compute_rouge_l
 
 def _split_words(texts):
     return map(lambda t: t.split(), texts)
@@ -16,7 +17,7 @@ def get_extract_label(art_sents, abs_sents):
     scores = []
     indices = list(range(len(art_sents)))
     for abst in abs_sents:
-        rouges = list(map(compute_rouge_l(reference=abst, mode='r'),
+        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='r'),
                           art_sents))
         ext = max(indices, key=lambda i: rouges[i])
         indices.remove(ext)
