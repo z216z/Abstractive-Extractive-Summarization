@@ -3,8 +3,9 @@ import sys
 import json
 import argparse
 
-from make_extraction_labels import label
+from make_extraction_labels import label, split_data
 from preprocess_methods import generate_corpus, tokenizer, generate_bow, filter_corpus, save_json, read_json
+from train_word2vec import train_word2vec
     
 def pipeline(DATASET_PATH):    
     CORPUS_TOKENIZED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'corpus_tokenized.txt')
@@ -28,6 +29,12 @@ def pipeline(DATASET_PATH):
         
     label(DATASET_PATH)
     print('Labels generated!')
+    
+    split_data(DATASET_PATH)
+    print('Labels partitioned!')
+    
+    train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH)
+    print('Word2Vec model saved!')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
