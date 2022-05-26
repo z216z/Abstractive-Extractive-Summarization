@@ -21,7 +21,6 @@ arc,asset reconstruction companies
 asba,applications supported bank accounts
 assocham,associated chambers of commerce and industry of india 
 atm,automated teller machine 
-b,billion
 bcbs,basel committee on banking supervision
 bcsbi,banking codes and standards board of india
 bis,bank for international settlements 
@@ -163,7 +162,6 @@ libor,london inter bank offered rate
 lic,life insurance corporation of india
 ltcg,long-term capital gains
 ltn,long term note
-m,million
 mca,ministry of company affairs
 mclr,marginal cost of lending rate
 mfdf,micro finance development fund
@@ -217,7 +215,6 @@ ppf,public provident fund
 ppis,prepaid payment instruments
 prsf,partial risk sharing facility
 qib,qualified institutional bankers
-r'[^a-za-z0-9]', ''
 rbi,reserve bank of india
 rbs,royal bank of scotland 
 rdbms,relational database management system
