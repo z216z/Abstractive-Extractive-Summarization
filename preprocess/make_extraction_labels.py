@@ -17,7 +17,7 @@ def get_extract_label(art_sents, abs_sents):
     scores = []
     indices = list(range(len(art_sents)))
     for abst in abs_sents:
-        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='r'),
+        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
                           art_sents))
         ext = max(indices, key=lambda i: rouges[i])
         indices.remove(ext)
