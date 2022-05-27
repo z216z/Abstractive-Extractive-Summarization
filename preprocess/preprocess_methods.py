@@ -4,7 +4,7 @@ import re
 import os
 import json
 from nltk.tokenize import word_tokenize
-from regex.utils import regex_check
+from regexp.utils import regex_check
 
 nltk.download('punkt')
 start, end = '<SOS>', '<EOS>'
