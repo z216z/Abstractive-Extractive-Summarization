@@ -2,17 +2,17 @@ import csv
 import re
 
 # Read files for the regex check:
-with open('/content/NLP_Project/preprocess/regex/en_conversions.csv') as csvfile:
+with open('/content/NLP_Project/preprocess/regexp/en_conversions.csv') as csvfile:
     en_conversions = [r for r in csv.reader(csvfile)]
-with open('/content/NLP_Project/preprocess/regex/en_numerical_conversions.csv') as csvfile:
+with open('/content/NLP_Project/preprocess/regexp/en_numerical_conversions.csv') as csvfile:
     en_numerical_conversions = [r for r in csv.reader(csvfile)]
-with open('/content/NLP_Project/preprocess/regex/gr_conversions.csv') as csvfile:
+with open('/content/NLP_Project/preprocess/regexp/gr_conversions.csv') as csvfile:
     gr_conversions = [r for r in csv.reader(csvfile)]
-with open('/content/NLP_Project/preprocess/regex/gr_numerical_conversions.csv') as csvfile:
+with open('/content/NLP_Project/preprocess/regexp/gr_numerical_conversions.csv') as csvfile:
     gr_numerical_conversions = [r for r in csv.reader(csvfile)]
-with open('/content/NLP_Project/preprocess/regex/sp_conversions.csv') as csvfile:
+with open('/content/NLP_Project/preprocess/regexp/sp_conversions.csv') as csvfile:
     sp_conversions = [r for r in csv.reader(csvfile)]
-with open('/content/NLP_Project/preprocess/regex/sp_numerical_conversions.csv') as csvfile:
+with open('/content/NLP_Project/preprocess/regexp/sp_numerical_conversions.csv') as csvfile:
     sp_numerical_conversions = [r for r in csv.reader(csvfile)]
 
 def numerical_related_conversion(sentence, numerical_conversions):
