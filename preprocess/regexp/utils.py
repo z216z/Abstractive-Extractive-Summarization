@@ -76,10 +76,6 @@ def regex_check(sentence, language, use_abbreviations=True):
     # use lookbehind and lookahead regex patterns to remove punctuation not related with numbers:
     sentence = re.sub('((?<!\d)[.](?!\d))|((?<=\d)[.](?!\d))', '', sentence)
     sentence = re.sub('((?<!\d)[,;:/-](?!\d))|((?<=\d)[,;:/-](?!\d))', ' ', sentence)
-    # use the ',' instead of the '.' as separator for all decimal numbers:
-    sentence = re.sub('.', ',', sentence)
-    # use the '-' instead of the '/' as separator for all dates and similar:
-    sentence = re.sub('/', '-', sentence)
     sentence = numerical_related_conversion(sentence, numerical_conversions)
     if use_abbreviations is False:
         sentence = abbreviation_conversion(sentence, conversions)
