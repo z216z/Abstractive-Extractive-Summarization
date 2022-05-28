@@ -25,22 +25,30 @@ def numerical_related_conversion(sentence, numerical_conversions):
         sentence = re.sub(f'(^{abbreviation}\s)|(\s{abbreviation}\s)|(\s{abbreviation}$)',
                           " " + extended_version + " ", sentence)
 
-        match_at_the_beginning = re.search(f'(^{row[0]}\d)', sentence)
+        # use lookbehind and lookahead regex patterns
+        sentence = re.sub(f'(?<=\d){abbreviation}|{abbreviation}(?=\d)', " " + extended_version + " ", sentence) 
+        
+        """
+        match_at_the_beginning = re.search(f'(^{abbreviation}\d)', sentence)
         if match_at_the_beginning is not None:
             sentence = extended_version + " " + sentence[match_at_the_beginning.end() - 1:]
+            print("2: ", sentence)
 
-        match_at_the_end = re.search(f'(\d{row[0]}$)', sentence)
+        match_at_the_end = re.search(f'(\d{abbreviation}$)', sentence)
         if match_at_the_end is not None:
             sentence = sentence[:match_at_the_end.start() + 1] + " " + extended_version
+            print("3: ", sentence)
 
-        matches_in_the_middle = re.finditer(f'(\d{row[0]}\s)|(\s{row[0]}\d)', sentence)
+        matches_in_the_middle = re.finditer(f'(\d{abbreviation}\s)|(\s{abbreviation}\d)', sentence)
         next_match_delay = 0
         for m in matches_in_the_middle:
             if m is not None:
                 match_start = m.start() + next_match_delay
                 match_end = m.end() + next_match_delay
-                sentence = sentence[:match_start + 1] + " " + extended_version + " " + sentence[match_end - 1:]
+                sentence = sentence[:match_start] + " " + extended_version + " " + sentence[match_end - 1:]
                 next_match_delay = len(extended_version) - len(abbreviation)
+                print("4: ", sentence)
+        """
     return sentence
     
 def abbreviation_conversion(sentence, conversions):
@@ -63,7 +71,15 @@ def regex_check(sentence, language, use_abbreviations=True):
         numerical_conversions = sp_numerical_conversions
     else:
         raise ValueError('Error: language not available!')
-    sentence = re.sub('[^a-zA-Z0-9$£€]', ' ', sentence)
+    sentence = re.sub('_', ' ', sentence) # \w considers alphanumeric characters and '_', so we substitute it
+    sentence = re.sub('[^\w$£€%\&.,;:/-]', ' ', sentence)
+    # use lookbehind and lookahead regex patterns to remove punctuation not related with numbers:
+    sentence = re.sub('((?<!\d)[.](?!\d))|((?<=\d)[.](?!\d))', '', sentence)
+    sentence = re.sub('((?<!\d)[,;:/-](?!\d))|((?<=\d)[,;:/-](?!\d))', ' ', sentence)
+    # use the ',' instead of the '.' as separator for all decimal numbers:
+    sentence = re.sub('.', ',', sentence)
+    # use the '-' instead of the '/' as separator for all dates and similar:
+    sentence = re.sub('/', '-', sentence)
     sentence = numerical_related_conversion(sentence, numerical_conversions)
     if use_abbreviations is False:
         sentence = abbreviation_conversion(sentence, conversions)
