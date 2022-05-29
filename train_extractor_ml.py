@@ -31,7 +31,7 @@ from data.batcher import BucketedGenerater
 BUCKET_SIZE = 6400
 
 try:
-    DATA_DIR = os.environ['DATA']
+    DATA_DIR = os.environ['DATASET_PATH']
 except KeyError:
     print('please use environment variable to specify data directories')
 
