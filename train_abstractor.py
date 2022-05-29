@@ -31,7 +31,7 @@ from utils import make_vocab, make_embedding
 BUCKET_SIZE = 6400
 
 try:
-    DATA_DIR = os.environ['DATA']
+    DATA_DIR = os.environ['DATASET_PATH']
 except KeyError:
     print('please use environment variable to specify data directories')
 
