@@ -124,12 +124,10 @@ def batchify_fn(pad, start, end, data, cuda=True):
     sources, targets = tuple(map(list, unzip(data)))
 
     src_lens = [len(src) for src in sources]
-    #uncomment in case of addition of "SOS" and "EOS". After that, comment successive 2 lines
-    #tar_ins = [[start] + tgt[1:-1] for tgt in targets]
-    #targets = [tgt[1:-1] + [end] for tgt in targets]
-    tar_ins = [[start] + tgt for tgt in targets]
-    targets = [tgt + [end] for tgt in targets]
-
+    # Read sentences without <SOS> and <EOS>
+    tar_ins = [[start] + tgt[1:-1] for tgt in targets] #tar_ins = [[start] + tgt for tgt in targets]
+    targets = [tgt[1:-1] + [end] for tgt in targets] #targets = [tgt + [end] for tgt in targets]
+    
     source = pad_batch_tensorize(sources, pad, cuda)
     tar_in = pad_batch_tensorize(tar_ins, pad, cuda)
     target = pad_batch_tensorize(targets, pad, cuda)
@@ -146,12 +144,9 @@ def batchify_fn_copy(pad, start, end, data, cuda=True):
     src_lens = [len(src) for src in sources]
     sources = [src for src in sources]
     ext_srcs = [ext for ext in ext_srcs]
-    #Un-comment in case of <SOS> and <EOS> and comment successive 2 lines.
-    #tar_ins = [[start] + tgt[1:-1] for tgt in tar_ins]
-    #targets = [tgt[1:-1] + [end] for tgt in targets]
-
-    tar_ins = [[start] + tgt for tgt in tar_ins]
-    targets = [tgt + [end] for tgt in targets]
+    # Read sentences without <SOS> and <EOS>
+    tar_ins = [[start] + tgt[1:-1] for tgt in tar_ins] #tar_ins = [[start] + tgt for tgt in tar_ins]
+    targets = [tgt[1:-1] + [end] for tgt in targets] #targets = [tgt + [end] for tgt in targets]
 
     source = pad_batch_tensorize(sources, pad, cuda)
     tar_in = pad_batch_tensorize(tar_ins, pad, cuda)
@@ -169,11 +164,9 @@ def batchify_fn_extract_ptr(pad, data, cuda=True):
     source_lists, targets = tuple(map(list, unzip(data)))
 
     src_nums = list(map(len, source_lists))
-    sources = list(map(pad_batch_tensorize(pad=pad, cuda=cuda), source_lists))
-    #maybe the previous line is a bug(?)
-    #sources = [pad_batch_tensorize(source,pad=pad,cuda=cuda) for source in source_lists]
+    sources = list(map(pad_batch_tensorize(pad=pad, cuda=cuda), source_lists)) # bug(?)
+    #sources = [pad_batch_tensorize(source, pad=pad, cuda=cuda) for source in source_lists]
    
-
     # PAD is -1 (dummy extraction index) for using sequence loss
     target = pad_batch_tensorize(targets, pad=-1, cuda=cuda)
     remove_last = lambda tgt: tgt[:-1]
