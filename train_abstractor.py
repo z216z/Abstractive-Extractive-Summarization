@@ -29,11 +29,7 @@ from utils import make_vocab, make_embedding
 # NOTE: bucket size too large may sacrifice randomness,
 #       to low may increase # of PAD tokens
 BUCKET_SIZE = 6400
-
-try:
-    DATA_DIR = os.environ['DATASET_PATH']
-except KeyError:
-    print('please use environment variable to specify data directories')
+DATA_DIR = None
 
 class MatchDataset(CnnDmDataset):
     """ single article sentence -> single abstract sentence
@@ -112,9 +108,16 @@ def build_batchers(word2id, cuda, debug):
 def main(args):
     # create data batcher, vocabulary
     # batcher
-    with open(join(DATA_DIR, 'vocab_cnt.pkl'), 'rb') as f:
-        wc = pkl.load(f)
-    word2id = make_vocab(wc, args.vsize)
+    DATASET_PATH = '/content/NLP_Project/Dataset'
+    if args.data == 'FNS2022':
+        LANGUAGE = args.language
+    else:
+        LANGUAGE = 'English'
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
+    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
+    w2v = gensim.models.Word2Vec.load(os.path.join(DATASET_PATH, 'preprocess', 'word2vec.model')).wv
+    wc = [word[0] for word in w2v.vocab.items()]
+    word2id = make_vocab(wc)
     train_batcher, val_batcher = build_batchers(word2id,
                                                 args.cuda, args.debug)
 
@@ -125,7 +128,7 @@ def main(args):
         # NOTE: the pretrained embedding having the same dimension
         #       as args.emb_dim should already be trained
         embedding, _ = make_embedding(
-            {i: w for w, i in word2id.items()}, args.w2v)
+            {i: w for w, i in word2id.items()}, w2v)
         net.set_embedding(embedding)
 
     # configure training setting
@@ -134,15 +137,15 @@ def main(args):
     )
 
     # save experiment setting
-    if not exists(args.path):
-        os.makedirs(args.path)
-    with open(join(args.path, 'vocab.pkl'), 'wb') as f:
+    if not exists(os.join(DATASET_PATH, 'model'):
+        os.makedirs(os.join(DATASET_PATH, 'model')
+    with open(os.join(DATASET_PATH, 'model', 'vocab.pkl'), 'wb') as f:
         pkl.dump(word2id, f, pkl.HIGHEST_PROTOCOL)
     meta = {}
-    meta['net']           = 'base_abstractor'
+    meta['net']           = 'base_extractor'
     meta['net_args']      = net_args
     meta['traing_params'] = train_params
-    with open(join(args.path, 'meta.json'), 'w') as f:
+    with open(os.join(DATASET_PATH, 'model', 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
 
     # prepare trainer
@@ -158,7 +161,7 @@ def main(args):
     pipeline = BasicPipeline(meta['net'], net,
                              train_batcher, val_batcher, args.batch, val_fn,
                              criterion, optimizer, grad_fn)
-    trainer = BasicTrainer(pipeline, args.path,
+    trainer = BasicTrainer(pipeline, os.join(DATASET_PATH, 'model'),
                            args.ckpt_freq, args.patience, scheduler)
 
     print('start training with the following hyper-parameters:')
@@ -170,15 +173,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='training of the abstractor (ML)'
     )
-    parser.add_argument('--path', required=True, help='root of the model')
-    #TODO DATADIR
+    parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
+    parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
 
     parser.add_argument('--vsize', type=int, action='store', default=20000,
                         help='vocabulary size')
     parser.add_argument('--emb_dim', type=int, action='store', default=300,
                         help='the dimension of word embedding')
-    parser.add_argument('--w2v', action='store',
-                        help='use pretrained word2vec embedding')
+    #parser.add_argument('--w2v', action='store',
+    #                    help='use pretrained word2vec embedding')
     parser.add_argument('--n_hidden', type=int, action='store', default=256,
                         help='the number of hidden units of LSTM')
     parser.add_argument('--n_layer', type=int, action='store', default=2,
