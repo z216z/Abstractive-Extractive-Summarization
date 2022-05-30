@@ -30,11 +30,12 @@ def get_extract_label(art_sents, abs_sents):
             break
     return extracted, scores
 
-def label(DATASET_PATH):
+def label(DATASET_PATH, split):
     data = {}
-    path_reports = os.path.join(DATASET_PATH, 'annual_reports')
-    path_summaries = os.path.join(DATASET_PATH, 'gold_summaries')
-    path_labels = os.path.join(DATASET_PATH, 'labels')
+    path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
+    path_summaries = os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries')
+    split = 'train' if split == 'training' else 'val'
+    path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels', split)
     if not os.path.exists(path_labels):
         os.makedirs(path_labels)
         
