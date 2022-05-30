@@ -32,13 +32,11 @@ def get_extract_label(art_sents, abs_sents):
 
 def label(DATASET_PATH):
     data = {}
-    path_reports = os.path.join(DATASET_PATH, 'preprocess', 'annual_reports')
-    path_summaries = os.path.join(DATASET_PATH, 'preprocess', 'gold_summaries')
-    path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels')
+    path_reports = os.path.join(DATASET_PATH, 'annual_reports')
+    path_summaries = os.path.join(DATASET_PATH, 'gold_summaries')
+    path_labels = os.path.join(DATASET_PATH, 'labels')
     if not os.path.exists(path_labels):
-        os.makedirs(os.path.join(path_labels, 'all'))
-        os.makedirs(os.path.join(path_labels, 'training'))
-        os.makedirs(os.path.join(path_labels, 'validation'))
+        os.makedirs(path_labels)
         
     for i, file_name in enumerate(os.listdir(path_reports)):
         with open(os.path.join(path_reports, file_name)) as fr:
@@ -52,9 +50,10 @@ def label(DATASET_PATH):
         extracted, scores = get_extract_label(art_sents, abs_sents)
         data['extracted'] = extracted
         data['score'] = scores
-        with open(os.path.join(path_labels, 'all', '{}.json'.format(file_name.split('.')[0])), 'w') as f:
+        with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
             json.dump(data, f, indent=4)
 
+""" Method not used: we use the training-validation split of the competition
 def split_data(DATASET_PATH):
     path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels')
     file_names = os.listdir(os.path.join(path_labels, 'all'))
@@ -63,3 +62,4 @@ def split_data(DATASET_PATH):
         shutil.copyfile(os.path.join(path_labels, 'all', file_name), os.path.join(path_labels, 'training', file_name))
     for file_name in X_test:
         shutil.copyfile(os.path.join(path_labels, 'all', file_name), os.path.join(path_labels, 'validation', file_name))
+"""
