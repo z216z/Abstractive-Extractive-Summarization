@@ -63,7 +63,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
         for _, split in enumerate(['training', 'validation']):
-            label(os.path.join(DATASET_PATH, 'preprocess', split))
+            label(DATASET_PATH, split)
             print(f'Labels generated for the {split} set!')
       
 if __name__ == '__main__':
