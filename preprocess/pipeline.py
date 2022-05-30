@@ -77,11 +77,10 @@ if __name__ == '__main__':
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
     if args.data == 'FNS2022':
-        DATASET_PATH = os.path.join(DATASET_PATH, args.data, args.language)
         LANGUAGE = args.language
     else:
-        DATASET_PATH = os.path.join(DATASET_PATH, args.data)
         LANGUAGE = 'English'
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
     
     if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess')):
         for _, split in enumerate(['training', 'validation']):
