@@ -27,7 +27,7 @@ def make_vocab(wc):
     word2id['<unk>'] = UNK
     word2id['<SOS>'] = START
     word2id['<EOS>'] = END
-    for i, (w, _) in enumerate(wc, 4):
+    for i, w in enumerate(wc, 4):
         if w not in ['<SOS>', '<EOS>']:
             word2id[w] = i
     return word2id
