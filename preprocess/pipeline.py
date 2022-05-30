@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 
-from make_extraction_labels import label, split_data
+from make_extraction_labels import label
 from preprocess_methods import generate_corpus, tokenizer, generate_bow, filter_corpus, save_json, read_json
 from train_word2vec import train_word2vec
 
@@ -57,11 +57,11 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         print('Word2Vec model saved!')
         STAGE = 5
     
-    if STAGE == 5 and \ 
-        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'annual_reports'))) > 0 and \ 
+    if STAGE == 5 and \
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'gold_summaries'))) > 0 and \
-        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \ 
-        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0 and:
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
         for _, split in enumerate(['training', 'validation']):
             label(os.path.join(DATASET_PATH, 'preprocess', split))
             print(f'Labels generated for the {split} set!')
