@@ -29,9 +29,7 @@ from data.batcher import BucketedGenerater
 
 
 BUCKET_SIZE = 6400
-
-try:
-    DATA_DIR = os.environ['DATASET_PATH']
+DATA_DIR = os.environ['DATASET_PATH']
 except KeyError:
     print('please use environment variable to specify data directories')
 
@@ -121,14 +119,18 @@ def configure_training(net_type, opt, lr, clip_grad, lr_decay, batch_size):
 
 
 def main(args):
-    
-    
-    ## TODO: aggiustare in funzione di Word2Vec e di dove vogliamo metterlo ##
     assert args.net_type in ['ff', 'rnn']
     # create data batcher, vocabulary
     # batcher
-    with open(join(DATA_DIR, 'vocab_cnt.pkl'), 'rb') as f:
-        wc = pkl.load(f)
+    DATASET_PATH = '/content/NLP_Project/Dataset'
+    if args.data == 'FNS2022':
+        LANGUAGE = args.language
+    else:
+        LANGUAGE = 'English'
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
+    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
+    w2v = gensim.models.Word2Vec.load(os.path.join(DATASET_PATH, 'preprocess', 'word2vec.model')).wv
+    wc = [word[0] for word in w2v.vocab.items()]
     word2id = make_vocab(wc, args.vsize)
     train_batcher, val_batcher = build_batchers(args.net_type, word2id,
                                                 args.cuda, args.debug)
@@ -141,7 +143,7 @@ def main(args):
         # NOTE: the pretrained embedding having the same dimension
         #       as args.emb_dim should already be trained
         embedding, _ = make_embedding(
-            {i: w for w, i in word2id.items()}, args.w2v)
+            {i: w for w, i in word2id.items()}, w2v)
         net.set_embedding(embedding)
 
     # configure training setting
@@ -150,15 +152,15 @@ def main(args):
     )
 
     # save experiment setting
-    if not exists(args.path):
-        os.makedirs(args.path)
-    with open(join(args.path, 'vocab.pkl'), 'wb') as f:
+    if not exists(os.join(DATASET_PATH, 'model'):
+        os.makedirs(os.join(DATASET_PATH, 'model')
+    with open(os.join(DATASET_PATH, 'model', 'vocab.pkl'), 'wb') as f:
         pkl.dump(word2id, f, pkl.HIGHEST_PROTOCOL)
     meta = {}
     meta['net']           = 'ml_{}_extractor'.format(args.net_type)
     meta['net_args']      = net_args
     meta['traing_params'] = train_params
-    with open(join(args.path, 'meta.json'), 'w') as f:
+    with open(os.join(DATASET_PATH, 'model', 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
 
     # prepare trainer
@@ -174,7 +176,7 @@ def main(args):
     pipeline = BasicPipeline(meta['net'], net,
                              train_batcher, val_batcher, args.batch, val_fn,
                              criterion, optimizer, grad_fn)
-    trainer = BasicTrainer(pipeline, args.path,
+    trainer = BasicTrainer(pipeline, os.join(DATASET_PATH, 'model'),
                            args.ckpt_freq, args.patience, scheduler)
 
     print('start training with the following hyper-parameters:')
@@ -186,7 +188,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='training of the feed-forward extractor (ff-ext, ML)'
     )
-    parser.add_argument('--path', required=True, help='root of the model')
+    parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
+    parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
 
     # model options
     parser.add_argument('--net-type', action='store', default='rnn',
@@ -209,7 +212,7 @@ if __name__ == '__main__':
     # length limit
     parser.add_argument('--max_word', type=int, action='store', default=100,
                         help='maximun words in a single article sentence')
-    parser.add_argument('--max_sent', type=int, action='store', default=60,
+    parser.add_argument('--max_sent', type=int, action='store', default=50,
                         help='maximun sentences in an article article')
     # training options
     parser.add_argument('--lr', type=float, action='store', default=1e-3,
