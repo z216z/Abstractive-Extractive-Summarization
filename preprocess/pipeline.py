@@ -49,7 +49,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
             for _, folder in enumerate(['annual_reports', 'gold_summaries']):
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, folder))):
                     tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
-                print(f'{folder} processed!')
+                print(f'{split} {folder} processed!')
         STAGE = 4
     
     if STAGE == 4 and os.path.exists(CORPUS_FILTERED_PATH):
