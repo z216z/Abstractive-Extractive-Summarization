@@ -45,10 +45,11 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
             common_bow = read_json(os.path.join(DATASET_PATH, 'preprocess', 'common_bow.json'))
         except ValueError:
             return False
-        for _, folder in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training'))): # folders = [annual_reports, golden_summaries]
-            for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, 'training', folder))):
-                tokenizer(os.path.join(DATASET_PATH, 'training', folder, file_name), os.path.join(DATASET_PATH, 'preprocess', folder, file_name), LANGUAGE, common_bow)
-            print(f'{folder} processed!')
+        for _, split in enumerate(['training', 'validation']):
+            for _, folder in enumerate(['annual_reports', 'golden_summaries']):
+                for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, folder))):
+                    tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
+                print(f'{folder} processed!')
         STAGE = 4
     
     if STAGE == 4 and os.path.exists(CORPUS_FILTERED_PATH):
@@ -56,11 +57,14 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         print('Word2Vec model saved!')
         STAGE = 5
     
-    if STAGE == 5 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'annual_reports'))) > 0 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'gold_summaries'))) > 0:
-        label(DATASET_PATH)
-        print('Labels generated!')
-        split_data(DATASET_PATH)
-        print('Labels partitioned!')
+    if STAGE == 5 and \ 
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'annual_reports'))) > 0 and \ 
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'gold_summaries'))) > 0 and \
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \ 
+        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0 and:
+        for _, split in enumerate(['training', 'validation']):
+            label(os.path.join(DATASET_PATH, 'preprocess', split))
+            print(f'Labels generated for the {split} set!')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -80,7 +84,8 @@ if __name__ == '__main__':
         LANGUAGE = 'English'
     
     if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess')):
-        os.makedirs(os.path.join(DATASET_PATH, 'preprocess', 'annual_reports'))
-        os.makedirs(os.path.join(DATASET_PATH, 'preprocess', 'gold_summaries'))
+        for _, split in enumerate(['training', 'validation']):
+            os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports'))
+            os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries'))
         
     pipeline(DATASET_PATH, LANGUAGE, args.stage)
