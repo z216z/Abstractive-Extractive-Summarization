@@ -46,7 +46,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         except ValueError:
             return False
         for _, split in enumerate(['training', 'validation']):
-            for _, folder in enumerate(['annual_reports', 'golden_summaries']):
+            for _, folder in enumerate(['annual_reports', 'gold_summaries']):
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, folder))):
                     tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
                 print(f'{folder} processed!')
