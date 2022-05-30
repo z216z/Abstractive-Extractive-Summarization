@@ -4,7 +4,7 @@ import json
 import os
 from os.path import join, exists
 import pickle as pkl
-
+import gensim
 from cytoolz import compose
 
 import torch
@@ -29,9 +29,9 @@ from data.batcher import BucketedGenerater
 
 
 BUCKET_SIZE = 6400
-DATA_DIR = os.environ['DATASET_PATH']
-except KeyError:
-    print('please use environment variable to specify data directories')
+DATASET_PATH = None
+DATA_DIR = None
+
 
 class ExtractDataset(CnnDmDataset):
     """ article sentences -> extraction indices
@@ -122,16 +122,9 @@ def main(args):
     assert args.net_type in ['ff', 'rnn']
     # create data batcher, vocabulary
     # batcher
-    DATASET_PATH = '/content/NLP_Project/Dataset'
-    if args.data == 'FNS2022':
-        LANGUAGE = args.language
-    else:
-        LANGUAGE = 'English'
-    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
-    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
     w2v = gensim.models.Word2Vec.load(os.path.join(DATASET_PATH, 'preprocess', 'word2vec.model')).wv
     wc = [word[0] for word in w2v.vocab.items()]
-    word2id = make_vocab(wc, args.vsize)
+    word2id = make_vocab(wc)
     train_batcher, val_batcher = build_batchers(args.net_type, word2id,
                                                 args.cuda, args.debug)
 
@@ -152,15 +145,15 @@ def main(args):
     )
 
     # save experiment setting
-    if not exists(os.join(DATASET_PATH, 'model'):
-        os.makedirs(os.join(DATASET_PATH, 'model')
-    with open(os.join(DATASET_PATH, 'model', 'vocab.pkl'), 'wb') as f:
+    if not exists(os.path.join(DATASET_PATH, 'model')):
+        os.makedirs(os.path.join(DATASET_PATH, 'model'))
+    with open(os.path.join(DATASET_PATH, 'model', 'vocab.pkl'), 'wb') as f:
         pkl.dump(word2id, f, pkl.HIGHEST_PROTOCOL)
     meta = {}
     meta['net']           = 'ml_{}_extractor'.format(args.net_type)
     meta['net_args']      = net_args
     meta['traing_params'] = train_params
-    with open(os.join(DATASET_PATH, 'model', 'meta.json'), 'w') as f:
+    with open(os.path.join(DATASET_PATH, 'model', 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
 
     # prepare trainer
@@ -176,7 +169,7 @@ def main(args):
     pipeline = BasicPipeline(meta['net'], net,
                              train_batcher, val_batcher, args.batch, val_fn,
                              criterion, optimizer, grad_fn)
-    trainer = BasicTrainer(pipeline, os.join(DATASET_PATH, 'model'),
+    trainer = BasicTrainer(pipeline, os.path.join(DATASET_PATH, 'model'),
                            args.ckpt_freq, args.patience, scheduler)
 
     print('start training with the following hyper-parameters:')
@@ -236,9 +229,16 @@ if __name__ == '__main__':
                         help='run in debugging mode')
     parser.add_argument('--no-cuda', action='store_true',
                         help='disable GPU training')
-    #TODO add num_workers here and in "build_batcher(line 135)"
     args = parser.parse_args()
     args.bi = not args.no_bi
     args.cuda = torch.cuda.is_available() and not args.no_cuda
+
+    DATASET_PATH = '/content/NLP_Project/Dataset'
+    if args.data == 'FNS2022':
+        LANGUAGE = args.language
+    else:
+        LANGUAGE = 'English'
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
+    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
 
     main(args)
