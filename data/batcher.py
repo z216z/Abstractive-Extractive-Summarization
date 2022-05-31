@@ -54,6 +54,7 @@ def prepro_fn_extract(max_src_len, max_src_num, batch):
                                        extracts))
         return tokenized_sents, cleaned_extracts
     batch = list(map(prepro_one, batch))
+    batch = [element for element in batch if element[0] and element[1]]
     return batch
 
 @curry
