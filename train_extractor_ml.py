@@ -119,6 +119,7 @@ def configure_training(net_type, opt, lr, clip_grad, lr_decay, batch_size):
 
 
 def main(args):
+    EXT_PATH = os.path.join(DATASET_PATH, 'model', 'ext')
     assert args.net_type in ['ff', 'rnn']
     # create data batcher, vocabulary
     # batcher
@@ -132,12 +133,9 @@ def main(args):
     net, net_args = configure_net(args.net_type,
                                   len(word2id), args.emb_dim, args.conv_hidden,
                                   args.lstm_hidden, args.lstm_layer, args.bi)
-    if args.w2v:
-        # NOTE: the pretrained embedding having the same dimension
-        #       as args.emb_dim should already be trained
-        embedding, _ = make_embedding(
-            {i: w for w, i in word2id.items()}, w2v)
-        net.set_embedding(embedding)
+    embedding, _ = make_embedding(
+        {i: w for w, i in word2id.items()}, w2v)
+    net.set_embedding(embedding)
 
     # configure training setting
     criterion, train_params = configure_training(
@@ -145,15 +143,15 @@ def main(args):
     )
 
     # save experiment setting
-    if not exists(os.path.join(DATASET_PATH, 'model')):
-        os.makedirs(os.path.join(DATASET_PATH, 'model'))
-    with open(os.path.join(DATASET_PATH, 'model', 'vocab.pkl'), 'wb') as f:
+    if not exists(EXT_PATH):
+        os.makedirs(EXT_PATH)
+    with open(os.path.join(EXT_PATH, 'vocab.pkl'), 'wb') as f:
         pkl.dump(word2id, f, pkl.HIGHEST_PROTOCOL)
     meta = {}
     meta['net']           = 'ml_{}_extractor'.format(args.net_type)
     meta['net_args']      = net_args
     meta['traing_params'] = train_params
-    with open(os.path.join(DATASET_PATH, 'model', 'meta.json'), 'w') as f:
+    with open(os.path.join(EXT_PATH, 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
 
     # prepare trainer
@@ -169,7 +167,7 @@ def main(args):
     pipeline = BasicPipeline(meta['net'], net,
                              train_batcher, val_batcher, args.batch, val_fn,
                              criterion, optimizer, grad_fn)
-    trainer = BasicTrainer(pipeline, os.path.join(DATASET_PATH, 'model'),
+    trainer = BasicTrainer(pipeline, os.path.join(EXT_PATH),
                            args.ckpt_freq, args.patience, scheduler)
 
     print('start training with the following hyper-parameters:')
@@ -191,8 +189,8 @@ if __name__ == '__main__':
                         help='vocabulary size')
     parser.add_argument('--emb_dim', type=int, action='store', default=300,
                         help='the dimension of word embedding')
-    parser.add_argument('--w2v', action='store',
-                        help='use pretrained word2vec embedding')
+    #parser.add_argument('--w2v', action='store',
+    #                    help='use pretrained word2vec embedding')
     parser.add_argument('--conv_hidden', type=int, action='store', default=100,
                         help='the number of hidden units of Conv')
     parser.add_argument('--lstm_hidden', type=int, action='store', default=256,
