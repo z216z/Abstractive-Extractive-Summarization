@@ -31,10 +31,12 @@ def make_vocab(wc):
     id2word[UNK] = '<unk>'
     id2word[START] = '<SOS>'
     id2word[END] = '<EOS>'
-    for i, w in enumerate(wc, 4):
+    i = 4
+    for w in wc:
         if w not in ['<SOS>', '<EOS>']:
             word2id[w] = i
             id2word[i] = w
+            i += 1
     return word2id, id2word
 
 
