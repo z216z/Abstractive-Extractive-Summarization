@@ -4,7 +4,7 @@ import json
 import os
 from os.path import join, exists
 import pickle as pkl
-
+import gensim
 from cytoolz import compose
 
 import torch
@@ -29,6 +29,7 @@ from utils import make_vocab, make_embedding
 # NOTE: bucket size too large may sacrifice randomness,
 #       to low may increase # of PAD tokens
 BUCKET_SIZE = 6400
+DATASET_PATH = None
 DATA_DIR = None
 
 class MatchDataset(CnnDmDataset):
@@ -108,13 +109,7 @@ def build_batchers(word2id, cuda, debug):
 def main(args):
     # create data batcher, vocabulary
     # batcher
-    DATASET_PATH = '/content/NLP_Project/Dataset'
-    if args.data == 'FNS2022':
-        LANGUAGE = args.language
-    else:
-        LANGUAGE = 'English'
-    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
-    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
+    ABS_PATH = os.path.join(DATASET_PATH, 'model', 'abs')
     w2v = gensim.models.Word2Vec.load(os.path.join(DATASET_PATH, 'preprocess', 'word2vec.model')).wv
     wc = [word[0] for word in w2v.vocab.items()]
     word2id = make_vocab(wc)
@@ -124,12 +119,10 @@ def main(args):
     # make net
     net, net_args = configure_net(len(word2id), args.emb_dim,
                                   args.n_hidden, args.bi, args.n_layer)
-    if args.w2v:
-        # NOTE: the pretrained embedding having the same dimension
-        #       as args.emb_dim should already be trained
-        embedding, _ = make_embedding(
+    
+    embedding, _ = make_embedding(
             {i: w for w, i in word2id.items()}, w2v)
-        net.set_embedding(embedding)
+    net.set_embedding(embedding)
 
     # configure training setting
     criterion, train_params = configure_training(
@@ -137,15 +130,15 @@ def main(args):
     )
 
     # save experiment setting
-    if not exists(os.join(DATASET_PATH, 'model'):
-        os.makedirs(os.join(DATASET_PATH, 'model')
-    with open(os.join(DATASET_PATH, 'model', 'vocab.pkl'), 'wb') as f:
+    if not exists(ABS_PATH):
+        os.makedirs(ABS_PATH)
+    with open(os.path.join(ABS_PATH, 'vocab.pkl'), 'wb') as f:
         pkl.dump(word2id, f, pkl.HIGHEST_PROTOCOL)
     meta = {}
-    meta['net']           = 'base_extractor'
+    meta['net']           = 'base_abstractor'
     meta['net_args']      = net_args
     meta['traing_params'] = train_params
-    with open(os.join(DATASET_PATH, 'model', 'meta.json'), 'w') as f:
+    with open(os.path.join(ABS_PATH, 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
 
     # prepare trainer
@@ -161,7 +154,7 @@ def main(args):
     pipeline = BasicPipeline(meta['net'], net,
                              train_batcher, val_batcher, args.batch, val_fn,
                              criterion, optimizer, grad_fn)
-    trainer = BasicTrainer(pipeline, os.join(DATASET_PATH, 'model'),
+    trainer = BasicTrainer(pipeline, os.path.join(ABS_PATH),
                            args.ckpt_freq, args.patience, scheduler)
 
     print('start training with the following hyper-parameters:')
@@ -180,8 +173,8 @@ if __name__ == '__main__':
                         help='vocabulary size')
     parser.add_argument('--emb_dim', type=int, action='store', default=300,
                         help='the dimension of word embedding')
-    #parser.add_argument('--w2v', action='store',
-    #                    help='use pretrained word2vec embedding')
+    parser.add_argument('--w2v', action='store',
+                        help='use pretrained word2vec embedding')
     parser.add_argument('--n_hidden', type=int, action='store', default=256,
                         help='the number of hidden units of LSTM')
     parser.add_argument('--n_layer', type=int, action='store', default=2,
@@ -206,7 +199,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch', type=int, action='store', default=16,
                         help='the training batch size')
     parser.add_argument(
-        '--ckpt_freq', type=int, action='store', default=3000,
+        '--ckpt_freq', type=int, action='store', default=110,
         help='number of update steps for checkpoint and validation'
     )
     parser.add_argument('--patience', type=int, action='store', default=5,
@@ -216,9 +209,17 @@ if __name__ == '__main__':
                         help='run in debugging mode')
     parser.add_argument('--no-cuda', action='store_true',
                         help='disable GPU training')
-    #TODO ADD num_workers
+    
     args = parser.parse_args()
     args.bi = not args.no_bi
     args.cuda = torch.cuda.is_available() and not args.no_cuda
 
+    DATASET_PATH = '/content/NLP_Project/Dataset'
+    if args.data == 'FNS2022':
+        LANGUAGE = args.language
+    else:
+        LANGUAGE = 'English'
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
+    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
+                    
     main(args)
