@@ -30,7 +30,8 @@ def make_vocab(wc):
     for i, w in enumerate(wc, 4):
         if w not in ['<SOS>', '<EOS>']:
             word2id[w] = i
-    return word2id
+            id2word[i] = w
+    return word2id, id2word
 
 
 def make_embedding(id2word, w2v, initializer=None):
