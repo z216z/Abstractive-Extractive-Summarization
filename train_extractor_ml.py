@@ -125,7 +125,7 @@ def main(args):
     # batcher
     w2v = gensim.models.Word2Vec.load(os.path.join(DATASET_PATH, 'preprocess', 'word2vec.model')).wv
     wc = [word[0] for word in w2v.vocab.items()]
-    word2id = make_vocab(wc)
+    word2id, id2word = make_vocab(wc)
     train_batcher, val_batcher = build_batchers(args.net_type, word2id,
                                                 args.cuda, args.debug)
 
@@ -133,8 +133,7 @@ def main(args):
     net, net_args = configure_net(args.net_type,
                                   len(word2id), args.emb_dim, args.conv_hidden,
                                   args.lstm_hidden, args.lstm_layer, args.bi)
-    embedding, _ = make_embedding(
-        {i: w for w, i in word2id.items()}, w2v)
+    embedding, _ = make_embedding(id2word, w2v)
     net.set_embedding(embedding)
 
     # configure training setting
