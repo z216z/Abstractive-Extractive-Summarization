@@ -29,13 +29,8 @@ from metric import compute_rouge_l, compute_rouge_n
 
 
 MAX_ABS_LEN = 30
-#TODO: Pass DATA_DIR by argparser and set max_sent(maximum number of sentences in a document). 
-#TODO: Edit get_item
-try:
-    DATA_DIR = os.environ['DATA']
-except KeyError:
-    print('please use environment variable to specify data directories')
-
+DATASET_PATH = None
+DATA_DIR=None
 
 class RLDataset(CnnDmDataset):
     """ get the article sentences only (for decoding use)"""
@@ -122,12 +117,13 @@ def build_batchers(batch_size):
 
 
 def train(args):
-    if not exists(args.path):
-        os.makedirs(args.path)
+    ABS_PATH = os.path.join(DATASET_PATH, args.abs_dir)
+    EXT_PATH = os.path.join(DATASET_PATH, args.ext_dir)
+    RL_PATH = os.path.join(DATASET_PATH, args.rl_dir)
 
     # make net
     agent, agent_vocab, abstractor, net_args = configure_net(
-        args.abs_dir, args.ext_dir, args.cuda)
+        ABS_PATH, EXT_PATH, args.cuda)
 
     # configure training setting
     assert args.stop > 0
@@ -138,7 +134,6 @@ def train(args):
     train_batcher, val_batcher = build_batchers(args.batch)
     if args.reward=="avg_rouges":
         reward_fn=(compute_rouge_l+compute_rouge_n(n=1)+compute_rouge_n(n=2))/3
-
     if args.reward == 'rouge-l':
         reward_fn = compute_rouge_l
     elif args.reward == 'rouge-1':
@@ -150,14 +145,12 @@ def train(args):
         
     stop_reward_fn = compute_rouge_n(n=1)
   
-
-
     # save abstractor binary
     if args.abs_dir is not None:
         abs_ckpt = {}
-        abs_ckpt['state_dict'] = load_best_ckpt(args.abs_dir)
-        abs_vocab = pkl.load(open(join(args.abs_dir, 'vocab.pkl'), 'rb'))
-        abs_dir = join(args.path, 'abstractor')
+        abs_ckpt['state_dict'] = load_best_ckpt(ABS_PATH)
+        abs_vocab = pkl.load(open(join(ABS_PATH, 'vocab.pkl'), 'rb'))
+        abs_dir = join(RL_PATH, 'abstractor')
         os.makedirs(join(abs_dir, 'ckpt'))
         with open(join(abs_dir, 'meta.json'), 'w') as f:
             json.dump(net_args['abstractor'], f, indent=4)
@@ -169,9 +162,9 @@ def train(args):
     meta['net']           = 'rnn-ext_abs_rl'
     meta['net_args']      = net_args
     meta['train_params']  = train_params
-    with open(join(args.path, 'meta.json'), 'w') as f:
+    with open(join(RL_PATH, 'meta.json'), 'w') as f:
         json.dump(meta, f, indent=4)
-    with open(join(args.path, 'agent_vocab.pkl'), 'wb') as f:
+    with open(join(RL_PATH, 'agent_vocab.pkl'), 'wb') as f:
         pkl.dump(agent_vocab, f)
 
     # prepare trainer
@@ -186,7 +179,7 @@ def train(args):
                            optimizer, grad_fn,
                            reward_fn, args.gamma,
                            stop_reward_fn, args.stop)
-    trainer = BasicTrainer(pipeline, args.path,
+    trainer = BasicTrainer(pipeline, RL_PATH,
                            args.ckpt_freq, args.patience, scheduler,
                            val_mode='score')
 
@@ -199,14 +192,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='program to demo a Seq2Seq model'
     )
-    parser.add_argument('--path', required=True, help='root of the model')
-
+    parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
+    parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
 
     # model options
-    parser.add_argument('--abs_dir', action='store',
+    parser.add_argument('--abs_dir', action='store', default='model/abs',
                         help='pretrained summarizer model root path')
-    parser.add_argument('--ext_dir', action='store',
+    parser.add_argument('--ext_dir', action='store', default='model/ext',
                         help='root of the extractor model')
+    parser.add_argument('--rl_dir', action='store', default='model/rl', 
+                        help='root of the rl model')
     parser.add_argument('--ckpt', type=int, action='store', default=None,
                         help='ckeckpoint used decode')
 
@@ -228,7 +223,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch', type=int, action='store', default=16,
                         help='the training batch size')
     parser.add_argument(
-        '--ckpt_freq', type=int, action='store', default=1000,
+        '--ckpt_freq', type=int, action='store', default=10,
         help='number of update steps for checkpoint and validation'
     )
     parser.add_argument('--patience', type=int, action='store', default=5,
@@ -237,5 +232,13 @@ if __name__ == '__main__':
                         help='disable GPU training')
     args = parser.parse_args()
     args.cuda = torch.cuda.is_available() and not args.no_cuda
+
+    DATASET_PATH = '/content/NLP_Project/Dataset'
+    if args.data == 'FNS2022':
+        LANGUAGE = args.language
+    else:
+        LANGUAGE = 'English'
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
+    DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
 
     train(args)
