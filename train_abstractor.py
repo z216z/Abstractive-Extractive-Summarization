@@ -91,7 +91,7 @@ def build_batchers(word2id, cuda, debug):
     train_loader = DataLoader(
         MatchDataset('train'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
-        num_workers=4 if cuda and not debug else 0,
+        num_workers=2 if cuda and not debug else 0,
         collate_fn=coll_fn
     )
     train_batcher = BucketedGenerater(train_loader, prepro, sort_key, batchify,
@@ -99,7 +99,7 @@ def build_batchers(word2id, cuda, debug):
 
     val_loader = DataLoader(
         MatchDataset('val'), batch_size=BUCKET_SIZE,
-        shuffle=False, num_workers=4 if cuda and not debug else 0,
+        shuffle=False, num_workers=2 if cuda and not debug else 0,
         collate_fn=coll_fn
     )
     val_batcher = BucketedGenerater(val_loader, prepro, sort_key, batchify,
