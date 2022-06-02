@@ -105,12 +105,12 @@ def build_batchers(batch_size):
         return art_sents, abs_sents
     loader = DataLoader(
         RLDataset('train'), batch_size=batch_size,
-        shuffle=True, num_workers=4,
+        shuffle=True, num_workers=0,
         collate_fn=coll
     )
     val_loader = DataLoader(
         RLDataset('val'), batch_size=batch_size,
-        shuffle=False, num_workers=4,
+        shuffle=False, num_workers=0,
         collate_fn=coll
     )
     return cycle(loader), val_loader
