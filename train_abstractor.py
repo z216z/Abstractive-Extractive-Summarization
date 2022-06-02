@@ -195,7 +195,7 @@ if __name__ == '__main__':
                         help='patience for learning rate decay')
     parser.add_argument('--clip', type=float, action='store', default=2.0,
                         help='gradient clipping')
-    parser.add_argument('--batch', type=int, action='store', default=16,
+    parser.add_argument('--batch', type=int, action='store', default=2,
                         help='the training batch size')
     parser.add_argument(
         '--ckpt_freq', type=int, action='store', default=110,
