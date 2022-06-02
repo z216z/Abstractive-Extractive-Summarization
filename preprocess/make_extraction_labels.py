@@ -34,7 +34,7 @@ def label(DATASET_PATH, split):
     data = {}
     path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
     path_summaries = os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries')
-    split = 'train' if split == 'training' else 'val'
+    split = 'train' if split == 'training' else 'test'
     path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels', split)
     if not os.path.exists(path_labels):
         os.makedirs(path_labels)
@@ -54,13 +54,11 @@ def label(DATASET_PATH, split):
         with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
             json.dump(data, f, indent=4)
 
-""" Method not used: we use the training-validation split of the competition
 def split_data(DATASET_PATH):
-    path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels')
-    file_names = os.listdir(os.path.join(path_labels, 'all'))
-    X_train, X_test, y_train, y_test = train_test_split(file_names, file_names, test_size=0.3, random_state=42)
-    for file_name in X_train:
-        shutil.copyfile(os.path.join(path_labels, 'all', file_name), os.path.join(path_labels, 'training', file_name))
+    val_labels = os.path.join(DATASET_PATH, 'val')
+    not os.path.exists(val_labels):
+        os.makedirs(val_labels)
+    file_names = os.listdir(os.path.join(DATASET_PATH, 'train'))
+    _, X_val, _, _ = train_test_split(file_names, file_names, test_size=0.2, random_state=42)
     for file_name in X_test:
-        shutil.copyfile(os.path.join(path_labels, 'all', file_name), os.path.join(path_labels, 'validation', file_name))
-"""
+        shutil.move(os.path.join(DATASET_PATH, 'train'), val_labels)
