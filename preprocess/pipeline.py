@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 
-from make_extraction_labels import label
+from make_extraction_labels import label, split_data
 from preprocess_methods import generate_corpus, tokenizer, generate_bow, filter_corpus, save_json, read_json
 from train_word2vec import train_word2vec
 
@@ -65,6 +65,8 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         for _, split in enumerate(['training', 'validation']):
             label(DATASET_PATH, split)
             print(f'Labels generated for the {split} set!')
+        split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
+        print(f'Labels generated for the validation set!')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
