@@ -18,10 +18,7 @@ from data.batcher import conver2id, pad_batch_tensorize
 from data.data import CnnDmDataset
 
 
-try:
-    DATASET_DIR = os.environ['DATA']
-except KeyError:
-    print('please use environment variable to specify data directories')
+DATASET_DIR= "/content/NLP_Project/Dataset/FNS2022/Spanish/preprocess/labels"
 
 class DecodeDataset(CnnDmDataset):
     """ get the article sentences only (for decoding use)"""
@@ -78,8 +75,12 @@ class Abstractor(object):
                     ext_id2word[len(ext_id2word)] = w
         # if we choose to use <SOS> and <EOS> we should update raw_articles_sents->raw_article_sents = [raw_article_sent[1:] for raw_article_sent in raw_article_sents] a
         #and articles-> articles = [article[1:] for article in articles]
+        raw_article_sents = [raw_article_sent[1:] for raw_article_sent in raw_article_sents]
+        
         articles = conver2id(UNK, self._word2id, raw_article_sents)
+        #articles = [article[1:] for article in articles]
         art_lens = [len(art) for art in articles]
+        print(art_lens)
         article = pad_batch_tensorize(articles, PAD, cuda=False
                                      ).to(self._device)
         extend_arts = conver2id(UNK, ext_word2id, raw_article_sents)
