@@ -56,9 +56,9 @@ def label(DATASET_PATH, split):
 
 def split_data(DATASET_PATH):
     val_labels = os.path.join(DATASET_PATH, 'val')
-    not os.path.exists(val_labels):
+    if not os.path.exists(val_labels):
         os.makedirs(val_labels)
     file_names = os.listdir(os.path.join(DATASET_PATH, 'train'))
     _, X_val, _, _ = train_test_split(file_names, file_names, test_size=0.2, random_state=42)
-    for file_name in X_test:
-        shutil.move(os.path.join(DATASET_PATH, 'train'), val_labels)
+    for file_name in X_val:
+        shutil.move(os.path.join(DATASET_PATH, 'train', file_name), val_labels)
