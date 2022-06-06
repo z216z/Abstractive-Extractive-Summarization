@@ -133,7 +133,7 @@ def main(args):
     net, net_args = configure_net(args.net_type,
                                   len(word2id), args.emb_dim, args.conv_hidden,
                                   args.lstm_hidden, args.lstm_layer, args.bi)
-    embedding, _ = make_embedding(id2word, w2v)
+    embedding, _ = make_embedding(id2word, w2v, args.emb_dim)
     net.set_embedding(embedding)
 
     # configure training setting
