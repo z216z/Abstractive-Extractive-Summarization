@@ -75,8 +75,8 @@ if __name__ == '__main__':
     parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
     parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
     parser.add_argument('--stage', type=int, default=0, choices={0, 1, 2, 3, 4, 5}, help=stage_help)
-    parser.add_argument('--emb_dim', type=int, default=300, action=store, help='The dimension of word embedding.')
-    parser.add_argument('--max_len', type=int, default=None, action=store, help='Limit the number of sentences in the articles for training purposes.')
+    parser.add_argument('--emb_dim', type=int, default=300, action='store', help='The dimension of word embedding.')
+    parser.add_argument('--max_len', type=int, default=None, action='store', help='Limit the number of sentences in the articles for training purposes.')
     args = parser.parse_args()
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
