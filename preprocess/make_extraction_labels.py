@@ -48,10 +48,6 @@ def reduce_article_size(art_sents, abs_sents, art_max_len):
                 break
     return extracted
 
-def art_ext_pair(whole_article, extracted):
-    article 
-    return whole_article
-
 def label(DATASET_PATH, split, art_max_len=None):
     data = {}
     path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
