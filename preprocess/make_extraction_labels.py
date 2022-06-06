@@ -30,23 +30,23 @@ def get_extract_label(art_sents, abs_sents):
             break
     return extracted, scores
 
-def reduce_article_size(art_sents, abs_sents, art_max_len):
+def reduce_article_size(art_sents, abs_sents, top_M):
     """ greedily extract top article sentences based on summary sentences """
-    extracted = []
-    indices = list(range(len(art_sents)))
-    while len(extracted) < art_max_len:
-        for abst in abs_sents:
-            # for each sentence in the abstract, compute the rouge 
-            # with all the sentences in the article:
-            rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
-                              art_sents))
-            # Take the index of the article sentence maximizing the score:
-            ext = max(indices, key=lambda i: rouges[i])
-            indices.remove(ext)
-            extracted.append(ext)
-            if not indices:
-                break
-    return extracted
+    arts_indexes = []
+    indices = set(range(len(art_sents)))
+    for abst in abs_sents:
+        # for each sentence in the abstract, compute the rouge 
+        # with all the sentences in the article:
+        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
+                          art_sents))
+        # Take the index of the article sentence maximizing the score:
+        sorted_indices = sorted(indices, reverse=True, key=lambda i: rouges[i])
+        top_indices = sorted_indices[:top_M]
+        arts_indexes += top_indices
+        indices.difference_update(top_indices)
+        if not indices:
+            break
+    return arts_indexes
 
 def label(DATASET_PATH, split, art_max_len=None):
     data = {}
@@ -67,11 +67,12 @@ def label(DATASET_PATH, split, art_max_len=None):
         art_sents = tokenize(whole_article)
         abs_sents = tokenize(data['abstract'])
         if art_max_len is not None and len(whole_article) > art_max_len:
-            top_sentences_indexes = reduce_article_size(art_sents, abs_sents, art_max_len)
+            top_M = int(art_max_len/len(data['abstract']))
+            top_sentences_indexes = reduce_article_size(art_sents, abs_sents, top_M)
             data['article'] = [art for i, art in enumerate(whole_article) if i in top_sentences_indexes]
+            art_sents = tokenize(data['article'])
         else:
             data['article'] = whole_article
-        art_sents = tokenize(data['article'])
         extracted, scores = get_extract_label(art_sents, abs_sents)
         data['extracted'] = extracted
         data['score'] = scores
