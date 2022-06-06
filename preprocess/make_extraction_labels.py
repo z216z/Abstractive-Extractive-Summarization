@@ -31,9 +31,8 @@ def get_extract_label(art_sents, abs_sents):
     return extracted, scores
 
 def reduce_article_size(art_sents, abs_sents, art_max_len):
-    """ greedily match summary sentences to article sentences"""
+    """ greedily extract top article sentences based on summary sentences """
     extracted = []
-    scores = []
     indices = list(range(len(art_sents)))
     while len(extracted) < art_max_len:
         for abst in abs_sents:
@@ -45,7 +44,6 @@ def reduce_article_size(art_sents, abs_sents, art_max_len):
             ext = max(indices, key=lambda i: rouges[i])
             indices.remove(ext)
             extracted.append(ext)
-            scores.append(rouges[ext])
             if not indices:
                 break
     return extracted
@@ -72,9 +70,9 @@ def label(DATASET_PATH, split, art_max_len=None):
         tokenize = compose(list, _split_words)
         art_sents = tokenize(whole_article)
         abs_sents = tokenize(data['abstract'])
-        if art_max_len is not None:
-            top_sentences = reduce_article_size(art_sents, abs_sents, art_max_len)
-            data['article'] = [art for i, art in enumerate(whole_article) if i in top_sentences]
+        if art_max_len is not None and len(whole_article) > art_max_len:
+            top_sentences_indexes = reduce_article_size(art_sents, abs_sents, art_max_len)
+            data['article'] = [art for i, art in enumerate(whole_article) if i in top_sentences_indexes]
         else:
             data['article'] = whole_article
         art_sents = tokenize(data['article'])
