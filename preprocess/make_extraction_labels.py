@@ -30,7 +30,31 @@ def get_extract_label(art_sents, abs_sents):
             break
     return extracted, scores
 
-def label(DATASET_PATH, split):
+def reduce_article_size(art_sents, abs_sents, art_max_len):
+    """ greedily match summary sentences to article sentences"""
+    extracted = []
+    scores = []
+    indices = list(range(len(art_sents)))
+    while len(extracted) < art_max_len:
+        for abst in abs_sents:
+            # for each sentence in the abstract, compute the rouge 
+            # with all the sentences in the article:
+            rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
+                              art_sents))
+            # Take the index of the article sentence maximizing the score:
+            ext = max(indices, key=lambda i: rouges[i])
+            indices.remove(ext)
+            extracted.append(ext)
+            scores.append(rouges[ext])
+            if not indices:
+                break
+    return extracted
+
+def art_ext_pair(whole_article, extracted):
+    article 
+    return whole_article
+
+def label(DATASET_PATH, split, art_max_len=None):
     data = {}
     path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
     path_summaries = os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries')
@@ -41,13 +65,19 @@ def label(DATASET_PATH, split):
         
     for i, file_name in enumerate(os.listdir(path_reports)):
         with open(os.path.join(path_reports, file_name)) as fr:
-            data['article'] = fr.readlines()
+            whole_article = fr.readlines()
         abs_name = file_name.split('.')[0] + '_1.txt'
         with open(os.path.join(path_summaries, abs_name)) as fr:
             data['abstract'] = fr.readlines()
         tokenize = compose(list, _split_words)
-        art_sents = tokenize(data['article'])
+        art_sents = tokenize(whole_article)
         abs_sents = tokenize(data['abstract'])
+        if art_max_len is not None:
+            top_sentences = reduce_article_size(art_sents, abs_sents, art_max_len)
+            data['article'] = [art for i, art in enumerate(whole_article) if i in top_sentences]
+        else:
+            data['article'] = whole_article
+        art_sents = tokenize(data['article'])
         extracted, scores = get_extract_label(art_sents, abs_sents)
         data['extracted'] = extracted
         data['score'] = scores
