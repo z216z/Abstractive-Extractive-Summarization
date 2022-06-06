@@ -53,7 +53,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         STAGE = 4
     
     if STAGE == 4 and os.path.exists(CORPUS_FILTERED_PATH):
-        train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH)
+        train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH, args.emb_dim)
         print('Word2Vec model saved!')
         STAGE = 5
     
@@ -75,6 +75,7 @@ if __name__ == '__main__':
     parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
     parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
     parser.add_argument('--stage', type=int, default=0, choices={0, 1, 2, 3, 4, 5}, help=stage_help)
+    parser.add_argument('--emb_dim', type=int, default=300, action=store, help='the dimension of word embedding')
     args = parser.parse_args()
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
