@@ -24,8 +24,8 @@ DATASET_PATH = None
 DATA_DIR = None
 
 def compute_rouges(dec_outs, gold):
-    rouge_1 = compute_rouge_n(list(concat(dec_outs)),list(concat(gold)), n=1))
-    rouge_2 = compute_rouge_n(list(concat(dec_outs)),list(concat(gold)), n=2))
+    rouge_1 = compute_rouge_n(list(concat(dec_outs)),list(concat(gold)), n=1)
+    rouge_2 = compute_rouge_n(list(concat(dec_outs)),list(concat(gold)), n=2)
     rouge_L = compute_rouge_l_summ(dec_outs, gold)
     return rouge_1, rouge_2, rouge_L
 
@@ -44,7 +44,7 @@ def decode(model_dir, batch_size, max_len, cuda):
     else:
         abstractor = Abstractor(join(model_dir, 'abs'),
                                 max_len, cuda)
-    extractor = RLExtractor(join(model_dir, 'ext'), cuda=cuda)
+    extractor = RLExtractor(join(model_dir, 'rl'), cuda=cuda)
 
     # setup loader
     def coll(data):
@@ -102,7 +102,7 @@ def decode(model_dir, batch_size, max_len, cuda):
                     rouges[key].append(value)
     
     for key in rouges.keys():
-        print(f'Average ROUGE-{key.split('_')[-1]}: {mean(rouges[key])}')
+        print(f'Average ROUGE-{key.split("_")[-1]}: {mean(rouges[key])}')
 
     
 if __name__ == '__main__':
