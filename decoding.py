@@ -29,7 +29,7 @@ class DecodeDataset(CnnDmDataset):
     def __getitem__(self, i):
         js_data = super().__getitem__(i)
         art_sents = js_data['article']
-        abs_sents = js_data['gold']
+        abs_sents = js_data['abstract']
         return art_sents, abs_sents
 
 
