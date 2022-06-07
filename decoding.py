@@ -81,7 +81,6 @@ class Abstractor(object):
         articles = conver2id(UNK, self._word2id, raw_article_sents)
         #articles = [article[1:] for article in articles]
         art_lens = [len(art) for art in articles]
-        print(art_lens)
         article = pad_batch_tensorize(articles, PAD, cuda=False
                                      ).to(self._device)
         extend_arts = conver2id(UNK, ext_word2id, raw_article_sents)
