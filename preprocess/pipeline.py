@@ -66,7 +66,6 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
             label(DATASET_PATH, split, args.max_len)
             print(f'Labels generated for the {split} set!')
         split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
-        print(f'Labels generated for the validation set!')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
