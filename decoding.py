@@ -22,14 +22,15 @@ DATASET_DIR= "/content/NLP_Project/Dataset/FNS2022/Spanish/preprocess/labels"
 
 class DecodeDataset(CnnDmDataset):
     """ get the article sentences only (for decoding use)"""
-    def __init__(self, split):
+    def __init__(self, data_dir, split):
         assert split in ['val', 'test']
-        super().__init__(split, DATASET_DIR)
+        super().__init__(split, data_dir)
 
     def __getitem__(self, i):
         js_data = super().__getitem__(i)
         art_sents = js_data['article']
-        return art_sents
+        abs_sents = js_data['gold']
+        return art_sents, abs_sents
 
 
 def make_html_safe(s):
