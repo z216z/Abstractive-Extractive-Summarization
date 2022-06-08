@@ -20,11 +20,10 @@ def read_json(file_path):
     payload = json.loads(json_file.read())
     json_file.close()
     return payload    
-   
-def filter_sentence(sentence, common_bow):
-    return [w for w in sentence.split(" ") if w in common_bow.keys() or w in tokens]
     
-def tokenize_sentence(sentence, language, common_bow=None):
+def _tokenize_sentence(sentence, language, common_bow=None):
+    def filter_sentence(sentence, common_bow):
+        return [w for w in sentence.split(" ") if w in common_bow.keys() or w in tokens]
     sentence = sentence.lower()
     # Use regex to transform abbreviations and acronyms into their corresponding extended form:
     sentence = regex_check(sentence, language, use_abbreviations=True)
@@ -36,7 +35,7 @@ def filter_corpus(corpus, path_tokenized, common_bow):
     with open(path_tokenized, 'w') as fw:
         with open(corpus) as fr:
             for line in fr.readlines():
-                filtered_line = filter_sentence(line.strip(), common_bow)
+                filtered_line = _filter_sentence(line.strip(), common_bow)
                 if len(filtered_line) > 0:
                     fw.write(' '.join(filtered_line) + '\n')
 
@@ -60,7 +59,7 @@ def tokenizer(path_raw, path_tokenized, language, common_bow):
                 text += f'{line.strip()} '
             sentences = nltk.sent_tokenize(text)
         for s in sentences:
-            tokenized_sentence = tokenize_sentence(s, language, common_bow)
+            tokenized_sentence = _tokenize_sentence(s, language, common_bow)
             if len(tokenized_sentence) > 0:
                 tokenized_sentence.insert(0, tokens[0])
                 tokenized_sentence.append(tokens[1])
@@ -76,7 +75,7 @@ def generate_corpus(path_raw, path_tokenized, language):
                         text += f'{line.strip()} '
                     sentences = nltk.sent_tokenize(text)
                 for s in sentences:
-                    tokenized_sentence = tokenize_sentence(s, language)
+                    tokenized_sentence = _tokenize_sentence(s, language)
                     if len(tokenized_sentence) > 0:
                         tokenized_sentence.insert(0, tokens[0])
                         tokenized_sentence.append(tokens[1])
