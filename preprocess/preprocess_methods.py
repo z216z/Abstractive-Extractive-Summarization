@@ -82,7 +82,7 @@ def generate_corpus(path_raw, path_tokenized, language):
                     sentences = nltk.sent_tokenize(text)
                 for s in sentences:
                     tokenized_sentence = _tokenize_sentence(s, language)
-                    if len(tokenized_sentence) > 0:
+                    if len(tokenized_sentence) > 3:
                         tokenized_sentence.insert(0, tokens[0])
                         tokenized_sentence.append(tokens[1])
                         fw.write(' '.join(tokenized_sentence) + '\n')
