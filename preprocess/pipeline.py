@@ -68,8 +68,10 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
         for _, split in enumerate(['training', 'validation']):
             label(DATASET_PATH, split)
+            split = 'train' if split == 'training' else 'test'
             print(f'Labels generated for the {split} set!')
         split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
+        print(f'Labels generated for the validation set!')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
