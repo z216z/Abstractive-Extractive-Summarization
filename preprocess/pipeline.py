@@ -4,7 +4,7 @@ import json
 import argparse
 
 from make_extraction_labels import label, split_data
-from preprocess_methods import generate_corpus, tokenizer, generate_bow, filter_corpus, save_json, read_json
+from preprocess_methods import *
 from train_word2vec import train_word2vec
 
 stage_help = 'Select the starting preprocess stage: \n' \
