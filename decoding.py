@@ -17,9 +17,6 @@ from model.rl import ActorCritic
 from data.batcher import conver2id, pad_batch_tensorize
 from data.data import CnnDmDataset
 
-
-DATASET_DIR= "/content/NLP_Project/Dataset/FNS2022/Spanish/preprocess/labels"
-
 class DecodeDataset(CnnDmDataset):
     """ get the article sentences only (for decoding use)"""
     def __init__(self, data_dir, split):
