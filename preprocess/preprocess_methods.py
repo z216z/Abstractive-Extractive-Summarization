@@ -46,10 +46,11 @@ def cut_document(path_raw, max_len):
         for line in fr.readlines():
             text += f'{line.strip()} '
         sentences = nltk.sent_tokenize(text)
-        sentences = sentences[:max_len]
-        fr.seek(0)
-        fr.write('\n'.join(sentences))
-        fr.truncate()
+        if len(sentences) > max_len:
+            sentences = sentences[:max_len]
+            fr.seek(0)
+            fr.write('\n'.join(sentences))
+            fr.truncate()
                   
 def tokenizer(path_raw, path_tokenized, language, common_bow):
     with open(path_tokenized, 'w') as fw:
