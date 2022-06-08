@@ -40,6 +40,14 @@ def filter_corpus(corpus, path_tokenized, common_bow):
                 if len(filtered_line) > 0:
                     fw.write(' '.join(filtered_line) + '\n')
 
+def cut_document(path_raw, max_len):
+    with open(path_raw) as fr:
+        text = ''
+        for line in fr.readlines():
+            text += f'{line.strip()} '
+        sentences = nltk.sent_tokenize(text)
+    return sentences[:max_len]
+                  
 def tokenizer(path_raw, path_tokenized, language, common_bow):
     with open(path_tokenized, 'w') as fw:
         with open(path_raw) as fr:
