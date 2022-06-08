@@ -21,14 +21,15 @@ def read_json(file_path):
     json_file.close()
     return payload    
     
+def _filter_sentence(sentence, common_bow):
+    return [w for w in sentence.split(" ") if w in common_bow.keys() or w in tokens]
+    
 def _tokenize_sentence(sentence, language, common_bow=None):
-    def filter_sentence(sentence, common_bow):
-        return [w for w in sentence.split(" ") if w in common_bow.keys() or w in tokens]
     sentence = sentence.lower()
     # Use regex to transform abbreviations and acronyms into their corresponding extended form:
     sentence = regex_check(sentence, language, use_abbreviations=True)
     if common_bow is not None:
-        return filter_sentence(sentence, common_bow)
+        return _filter_sentence(sentence, common_bow)
     return word_tokenize(sentence)
 
 def filter_corpus(corpus, path_tokenized, common_bow):
