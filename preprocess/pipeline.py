@@ -20,6 +20,10 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
     CORPUS_FILTERED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'corpus_filtered.txt')
     
     if STAGE == 0:
+        if args.max_len is not None:
+            for _, split in enumerate(['training', 'validation']):
+                for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, 'annual_reports'))):
+                    cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len)
         generate_corpus(os.path.join(DATASET_PATH, 'training'), CORPUS_TOKENIZED_PATH, LANGUAGE)
         print('Corpus generated!')
         STAGE = 1
@@ -63,7 +67,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
         for _, split in enumerate(['training', 'validation']):
-            label(DATASET_PATH, split, args.max_len)
+            label(DATASET_PATH, split)
             print(f'Labels generated for the {split} set!')
         split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
       
@@ -75,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
     parser.add_argument('--stage', type=int, default=0, choices={0, 1, 2, 3, 4, 5}, help=stage_help)
     parser.add_argument('--emb_dim', type=int, default=300, action='store', help='The dimension of word embedding.')
-    parser.add_argument('--max_len', type=int, default=None, action='store', help='Limit the number of sentences in the articles for training purposes.')
+    parser.add_argument('--max_len', type=int, default=1000, action='store', help='Limit the number of sentences in the articles for training purposes.')
     args = parser.parse_args()
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
