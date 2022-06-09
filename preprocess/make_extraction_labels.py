@@ -4,6 +4,7 @@ import json
 import shutil
 from sklearn.model_selection import train_test_split
 from cytoolz import compose
+from tqdm import tqdm
 import sys
 sys.path.insert(0,'..')
 from NLP_Project import metric
@@ -57,7 +58,7 @@ def label(DATASET_PATH, split, art_max_len=None):
     if not os.path.exists(path_labels):
         os.makedirs(path_labels)
         
-    for i, file_name in enumerate(os.listdir(path_reports)):
+    for file_name in tqdm(os.listdir(path_reports)):
         with open(os.path.join(path_reports, file_name)) as fr:
             whole_article = fr.readlines()
         abs_name = file_name.split('.')[0] + '_1.txt'
