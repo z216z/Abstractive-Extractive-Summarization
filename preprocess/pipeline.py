@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import argparse
-
+from tqdm import tqdm
 from make_extraction_labels import label, split_data
 from preprocess_methods import *
 from train_word2vec import train_word2vec
@@ -49,9 +49,9 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
             common_bow = read_json(os.path.join(DATASET_PATH, 'preprocess', 'common_bow.json'))
         except ValueError:
             return False
-        for _, split in enumerate(['training', 'validation']):
-            for _, folder in enumerate(['annual_reports', 'gold_summaries']):
-                for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, folder))):
+        for split in ['training', 'validation']:
+            for folder in ['annual_reports', 'gold_summaries']:
+                for file_name in tqdm(os.listdir(os.path.join(DATASET_PATH, split, folder))):
                     tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
                 print(f'{split} {folder} processed!')
         STAGE = 4
