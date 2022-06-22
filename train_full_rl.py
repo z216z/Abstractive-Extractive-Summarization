@@ -25,7 +25,7 @@ from rl import get_grad_fn
 from rl import A2CPipeline
 from decoding import load_best_ckpt
 from decoding import Abstractor, ArticleBatcher
-from metric import compute_rouge_l, compute_rouge_n
+from metric import compute_rouge_l, compute_rouge_n, compute_bleu_rouge_n_f1
 
 
 MAX_ABS_LEN = 30
@@ -133,13 +133,17 @@ def train(args):
     )
     train_batcher, val_batcher = build_batchers(args.batch)
     if args.reward=="avg_rouges":
-        reward_fn=(compute_rouge_l+compute_rouge_n(n=1)+compute_rouge_n(n=2))/3
+        reward_fn = (compute_rouge_l+compute_rouge_n(n=1)+compute_rouge_n(n=2))/3
     if args.reward == 'rouge-l':
         reward_fn = compute_rouge_l
     elif args.reward == 'rouge-1':
         reward_fn = compute_rouge_n(n=1)
     elif args.reward == 'rouge-2':
         reward_fn = compute_rouge_n(n=2)
+    elif args.reward == 'bleu_rouge-1_f1':
+        reward_fn = compute_bleu_rouge_n_f1(n=1)
+    elif args.reward == 'bleu_rouge-2_f1':
+        reward_fn = compute_bleu_rouge_n_f1(n=2)
     else:
         reward_fn = compute_rouge_n(n=2)
         
@@ -206,7 +210,7 @@ if __name__ == '__main__':
                         help='ckeckpoint used decode')
 
     # training options
-    parser.add_argument('--reward', action='store', default='rouge-2',
+    parser.add_argument('--reward', action='store', choices={'rouge-1', 'rouge-2', 'rouge-l', 'avg_rouges', 'bleu_rouge-1_f1', 'bleu_rouge-2_f1'}, default='rouge-2',
                         help='reward function for RL')
     parser.add_argument('--lr', type=float, action='store', default=1e-4,
                         help='learning rate')
