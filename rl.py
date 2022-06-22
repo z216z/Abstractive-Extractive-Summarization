@@ -16,7 +16,7 @@ from metric import compute_rouge_l, compute_rouge_n
 from training import BasicPipeline
 
 
-def a2c_validate(agent, abstractor, loader):
+def a2c_validate(agent, abstractor, loader, reward_fn=compute_rouge_n(n=1)):
     agent.eval()
     start = time()
     print('start running validation...', end='')
@@ -35,8 +35,8 @@ def a2c_validate(agent, abstractor, loader):
             for (j, n), abs_sents in zip(ext_inds, abs_batch):
                 summs = all_summs[j:j+n]
                 # python ROUGE-1 (not official evaluation)
-                avg_reward += compute_rouge_n(list(concat(summs)),
-                                              list(concat(abs_sents)), n=1)
+                avg_reward += reward_fn(list(concat(summs)),
+                                              list(concat(abs_sents)))
                 i += 1
     avg_reward /= (i/100)
     print('finished in {}! avg reward: {:.2f}'.format(
@@ -175,7 +175,7 @@ class A2CPipeline(BasicPipeline):
         return log_dict
 
     def validate(self):
-        return a2c_validate(self._net, self._abstractor, self._val_batcher)
+        return a2c_validate(self._net, self._abstractor, self._val_batcher, self._reward_fn)
 
     def checkpoint(self, *args, **kwargs):
         # explicitly use inherited function in case I forgot :)
