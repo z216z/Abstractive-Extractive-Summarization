@@ -208,6 +208,8 @@ if __name__ == '__main__':
                         help='root of the rl model')
     parser.add_argument('--ckpt', type=int, action='store', default=None,
                         help='ckeckpoint used decode')
+    parser.add_argument('--max_abs', type=int, action='store', default=50,
+                        help='maximun words in a single abstract sentence')
 
     # training options
     parser.add_argument('--reward', action='store', choices={'rouge-1', 'rouge-2', 'rouge-l', 'avg_rouges', 'bleu_rouge-1_f1', 'bleu_rouge-2_f1'}, default='rouge-2',
@@ -244,5 +246,7 @@ if __name__ == '__main__':
         LANGUAGE = 'English'
     DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
     DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
+    
+    MAX_ABS_LEN = args.max_abs
 
     train(args)
