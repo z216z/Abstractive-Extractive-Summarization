@@ -72,8 +72,8 @@ def tokenizer(path_raw, path_tokenized, language, common_bow):
                 tokenized_sentence.append(tokens[1])
                 fw.write(' '.join(tokenized_sentence) + '\n')
 
-def generate_corpus(path_raw, path_tokenized, language):
-    with open(path_tokenized, 'w') as fw:
+def generate_corpus(path_raw, path_tokenized, language, mode='w'):
+    with open(path_tokenized, mode=mode) as fw:
         for _, folder in enumerate(os.listdir(path_raw)):
             for i, file_name in enumerate(os.listdir(os.path.join(path_raw, folder))):
                 with open(os.path.join(path_raw, folder, file_name)) as fr:
@@ -84,8 +84,10 @@ def generate_corpus(path_raw, path_tokenized, language):
                 for s in sentences:
                     tokenized_sentence = _tokenize_sentence(s, language)
                     if len(tokenized_sentence) > 3:
-                        tokenized_sentence.insert(0, tokens[0])
-                        tokenized_sentence.append(tokens[1])
+                        # if we are using the multilingual model, we don't need eos and sos tokens
+                        if mode=='w':
+                            tokenized_sentence.insert(0, tokens[0])
+                            tokenized_sentence.append(tokens[1])
                         fw.write(' '.join(tokenized_sentence) + '\n')
 
 def generate_bow(path_corpus, vocab_limit=20000):
