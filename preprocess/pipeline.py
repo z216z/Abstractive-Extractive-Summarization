@@ -5,7 +5,7 @@ import argparse
 from tqdm import tqdm
 from make_extraction_labels import label, split_data
 from preprocess_methods import *
-from train_word2vec import train_word2vec, train_doc2vec
+from train_word2vec import train_word2vec
 
 stage_help = 'Select the starting preprocess stage: \n' \
 '0 - Generate Corpus \n' \
@@ -57,12 +57,8 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         STAGE = 4
     
     if STAGE == 4 and os.path.exists(CORPUS_FILTERED_PATH):
-        if LANGUAGE == 'Multi':
-            train_doc2vec(DATASET_PATH, CORPUS_FILTERED_PATH, args.emb_dim)
-            print('Doc2Vec model saved!')
-        else:
-            train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH, args.emb_dim)
-            print('Word2Vec model saved!')
+        train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH, args.emb_dim)
+        print('Word2Vec model saved!')
         STAGE = 5
     
     if STAGE == 5 and \
@@ -82,7 +78,7 @@ if __name__ == '__main__':
         description = 'Run the preprocess pipeline.'
     )
     parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
-    parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish', 'Multi'}, help='Select the language if you use FNS2022.')
+    parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
     parser.add_argument('--stage', type=int, default=0, choices={0, 1, 2, 3, 4, 5}, help=stage_help)
     parser.add_argument('--emb_dim', type=int, default=300, action='store', help='The dimension of word embedding.')
     parser.add_argument('--max_len', type=int, default=1000, action='store', help='Limit the number of sentences in the articles for training purposes.')
@@ -93,11 +89,7 @@ if __name__ == '__main__':
         LANGUAGE = args.language
     else:
         LANGUAGE = 'English'
-    
-    if LANGUAGE != 'Multi':
-        DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
-    else:
-        DATASET_PATH = os.path.join(DATASET_PATH, args.data)
+    DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
     
     if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess')):
         for _, split in enumerate(['training', 'validation']):
