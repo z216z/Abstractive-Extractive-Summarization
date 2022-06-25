@@ -78,6 +78,36 @@ def build_batchers(net_type, word2id, cuda, debug):
                                     single_run=True, fork=not debug)
     return train_batcher, val_batcher
 
+def build_batchers_multi(net_type, word2id, cuda, debug):
+    assert net_type in ['ff', 'rnn']
+    prepro = prepro_fn_extract(args.max_word, args.max_sent)
+    def sort_key(sample):
+        src_sents, _ = sample
+        return len(src_sents)
+    batchify_fn = (batchify_fn_extract_ff if net_type == 'ff'
+                   else batchify_fn_extract_ptr)
+    convert_batch = (convert_batch_extract_ff if net_type == 'ff'
+                     else convert_batch_extract_ptr)
+    batchify = compose(batchify_fn(PAD, cuda=cuda),
+                       convert_batch(UNK, word2id))
+
+    train_loader = DataLoader(
+        ExtractDataset('train'), batch_size=BUCKET_SIZE,
+        shuffle=not debug,
+        num_workers=2 if cuda and not debug else 0,
+        collate_fn=coll_fn_extract
+    )
+    train_batcher = BucketedGenerater(train_loader, prepro, sort_key, batchify,
+                                      single_run=False, fork=not debug)
+
+    val_loader = DataLoader(
+        ExtractDataset('val'), batch_size=BUCKET_SIZE,
+        shuffle=False, num_workers=2 if cuda and not debug else 0,
+        collate_fn=coll_fn_extract
+    )
+    val_batcher = BucketedGenerater(val_loader, prepro, sort_key, batchify,
+                                    single_run=True, fork=not debug)
+    return train_batcher, val_batcher
 
 def configure_net(net_type, vocab_size, emb_dim, conv_hidden,
                   lstm_hidden, lstm_layer, bidirectional):
@@ -126,6 +156,14 @@ def main(args):
     # batcher
     # w2v = gensim.models.Word2Vec.load(os.path.join(DATASET_PATH, 'preprocess', 'word2vec.model')).wv
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    sentences = []
+    with open(os.path.join(DATASET_PATH, 'Multi', 'preprocess', 'corpus.txt')), 'r') as fr:
+        for line in fp:
+        # remove linebreak
+        x = line[:-1]
+        sentences.append(x)
+        
+    sent_embeddings = model.encode(sentences)
     # wc = [word[0] for word in w2v.vocab.items()]
     # word2id, id2word = make_vocab(wc)
     train_batcher, val_batcher = build_batchers(args.net_type, word2id,
