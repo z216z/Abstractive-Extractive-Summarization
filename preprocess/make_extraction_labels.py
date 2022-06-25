@@ -31,25 +31,6 @@ def get_extract_label(art_sents, abs_sents):
             break
     return extracted, scores
 
-def get_extract_label_multi(art_emb, abs_emb):
-    """ greedily match summary sentences to article sentences"""
-    extracted = []
-    scores = []
-    indices = list(range(len(art_sents)))
-    for abst in abs_emb:
-        # for each sentence in the abstract, compute the rouge 
-        # with all the sentences in the article:
-        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
-                          art_sents))
-        # Take the index of the article sentence maximizing the score:
-        ext = max(indices, key=lambda i: rouges[i])
-        indices.remove(ext)
-        extracted.append(ext)
-        scores.append(rouges[ext])
-        if not indices:
-            break
-    return extracted, scores
-
 def reduce_article_size(art_sents, abs_sents, top_M):
     """ greedily extract top article sentences based on summary sentences """
     arts_indexes = []
@@ -94,31 +75,6 @@ def label(DATASET_PATH, split, art_max_len=None):
             art_sents = tokenize(data['article'])
         else:
         """
-        data['article'] = whole_article
-        extracted, scores = get_extract_label(art_sents, abs_sents)
-        data['extracted'] = extracted
-        data['score'] = scores
-        with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
-            json.dump(data, f, indent=4)
-
-def label_multi(DATASET_PATH, lang, split):
-    data = {}
-    path_reports = os.path.join(DATASET_PATH, 'Multi', 'preprocess', lang, split, 'annual_reports')
-    path_summaries = os.path.join(DATASET_PATH, 'Multi', 'preprocess', lang, split, 'gold_summaries')
-    split = 'train' if split == 'training' else 'test'
-    path_labels = os.path.join(DATASET_PATH, 'Multi', 'preprocess', lang, 'labels', split)
-    if not os.path.exists(path_labels):
-        os.makedirs(path_labels)
-        
-    for file_name in tqdm(os.listdir(path_reports)):
-        with open(os.path.join(path_reports, file_name)) as fr:
-            whole_article = fr.readlines()
-        abs_name = file_name.split('.')[0] + '_1.txt'
-        with open(os.path.join(path_summaries, abs_name)) as fr:
-            data['abstract'] = fr.readlines()
-        tokenize = compose(list, _split_words)
-        art_sents = tokenize(whole_article)
-        abs_sents = tokenize(data['abstract'])
         data['article'] = whole_article
         extracted, scores = get_extract_label(art_sents, abs_sents)
         data['extracted'] = extracted
