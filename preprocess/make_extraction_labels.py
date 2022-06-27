@@ -62,27 +62,28 @@ def label(DATASET_PATH, split, art_max_len=None):
         
     for file_name in tqdm(os.listdir(path_reports)):
         with open(os.path.join(path_reports, file_name)) as fr:
-            whole_article = fr.readlines()
-        abs_name = file_name.split('.')[0] + '_1.txt'
-        with open(os.path.join(path_summaries, abs_name)) as fr:
-            data['abstract'] = fr.readlines()
-        tokenize = compose(list, _split_words)
-        art_sents = tokenize(whole_article)
-        abs_sents = tokenize(data['abstract'])
-        """
-        if art_max_len is not None and len(whole_article) > art_max_len:
-            top_M = int(art_max_len/len(data['abstract']))
-            top_sentences_indexes = reduce_article_size(art_sents, abs_sents, top_M)
-            data['article'] = [art for i, art in enumerate(whole_article) if i in top_sentences_indexes]
-            art_sents = tokenize(data['article'])
-        else:
-        """
-        data['article'] = whole_article
-        extracted, scores = get_extract_label(art_sents, abs_sents)
-        data['extracted'] = extracted
-        data['score'] = scores
-        with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
-            json.dump(data, f, indent=4)
+            article = fr.readlines()
+        if len(article) > 0:
+            abstract = _get_abstract(path_summaries, file_name.split('.')[0], len(article))
+            if abstract is not None:
+                data['abstract'] = abstract
+                tokenize = compose(list, _split_words)
+                art_sents = tokenize(article)
+                abs_sents = tokenize(data['abstract'])
+                """
+                if art_max_len is not None and len(article) > art_max_len:
+                    top_M = int(art_max_len/len(data['abstract']))
+                    top_sentences_indexes = reduce_article_size(art_sents, abs_sents, top_M)
+                    data['article'] = [art for i, art in enumerate(article) if i in top_sentences_indexes]
+                    art_sents = tokenize(data['article'])
+                else:
+                """
+                data['article'] = article
+                extracted, scores = get_extract_label(art_sents, abs_sents)
+                data['extracted'] = extracted
+                data['score'] = scores
+                with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
+                    json.dump(data, f, indent=4)
 
 def split_data(DATASET_PATH):
     val_labels = os.path.join(DATASET_PATH, 'val')
@@ -93,6 +94,16 @@ def split_data(DATASET_PATH):
     for file_name in X_val:
         shutil.move(os.path.join(DATASET_PATH, 'train', file_name), val_labels)
 
+def _get_abstract(path_summaries, file_name, article_len):
+    abs_names = [s for s in os.listdir(path_summaries) if s.split('_')[0] == file_name]
+    abs_names.sort()
+    for abs_name in abs_names:
+        with open(os.path.join(path_summaries, abs_name)) as fr:
+            abstract = fr.readlines()
+        if len(abstract) < article_len and len(abstract) > 0:
+            return abstract
+    return None
+    
 def analyze_documents(DATASET_PATH, split='training'):
     data = {}
     total_len = 0
@@ -108,26 +119,26 @@ def analyze_documents(DATASET_PATH, split='training'):
     for file_name in tqdm(os.listdir(path_reports)):
         with open(os.path.join(path_reports, file_name)) as fr:
             article = fr.readlines()
-        abs_name = file_name.split('.')[0] + '_1.txt'
-        with open(os.path.join(path_summaries, abs_name)) as fr:
-            abstract = fr.readlines()
-        tokenize = compose(list, _split_words)
-        art_sents = tokenize(article)
-        abs_sents = tokenize(abstract)
-        scores = _get_scores(art_sents, abs_sents)
-        bucket_scores = _get_bucket_scores(scores)
-        len_scores = len(scores)
-        total_len += len_scores
-        data['score'] = scores
-        data['bucket'] = bucket_scores
-        data['length'] = len_scores
-        for key, value in scores.items():
-            rows_distribution[key] += value
-        for key, value in bucket_scores.items():
-            percentage_distribution[key] += value
-            weighted_percentage_distribution[key] += value*len_scores
-        with open(os.path.join(path_analysis, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
-            json.dump(data, f, indent=4)
+        if len(article) > 0:
+            abstract = _get_abstract(path_summaries, file_name.split('.')[0], len(article))
+            if abstract is not None:
+                tokenize = compose(list, _split_words)
+                art_sents = tokenize(article)
+                abs_sents = tokenize(abstract)
+                scores = _get_scores(art_sents, abs_sents)
+                bucket_scores = _get_bucket_scores(scores)
+                len_scores = len(scores)
+                total_len += len_scores
+                data['score'] = scores
+                data['bucket'] = bucket_scores
+                data['length'] = len_scores
+                for key, value in scores.items():
+                    rows_distribution[key] += value
+                for key, value in bucket_scores.items():
+                    percentage_distribution[key] += value
+                    weighted_percentage_distribution[key] += value*len_scores
+                with open(os.path.join(path_analysis, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
+                    json.dump(data, f, indent=4)
     
     for key, value in weighted_percentage_distribution.items():
         weighted_percentage_distribution[key] = value/total_len
@@ -149,9 +160,12 @@ def _get_scores(art_sents, abs_sents):
 
 def _get_bucket_scores(scores):
     bucket_scores = defaultdict(lambda: 0)
-    buckets = np.array_split(np.array(scores.keys()), 100)
+    buckets = np.array_split(np.array([k for k in scores.keys()]), 100)
     for p, bucket in enumerate(buckets, 1):
-        for i in bucket:
-            bucket_scores[p] += scores[i]
-        bucket_scores[p] = bucket_scores[p]/len(bucket)
+        if len(bucket) > 0:
+            for i in bucket:
+                bucket_scores[p] += scores[i]
+            bucket_scores[p] = bucket_scores[p]/len(bucket)
+        else:
+            bucket_scores[p] = 0
     return bucket_scores
