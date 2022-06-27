@@ -6,6 +6,14 @@ from tqdm import tqdm
 from make_extraction_labels import label, split_data, analyze_documents#, evaluate_distribution
 from preprocess_methods import *
 
+stage_help = 'Select the starting analysis stage: \n' \
+'0 - Generate Corpus \n' \
+'1 - Generate BoW \n' \
+'2 - Filter Corpus \n' \
+'3 - Process Reports \n' \
+'4 - Analyze Reports \n' \
+'5 - Evaluate Distribution.'
+
 def analyze_distribution(DATASET_PATH, LANGUAGE, STAGE):    
     CORPUS_TOKENIZED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'corpus_tokenized.txt')
     CORPUS_FILTERED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'corpus_filtered.txt')
@@ -43,11 +51,9 @@ def analyze_distribution(DATASET_PATH, LANGUAGE, STAGE):
             print(f'{split} {folder} processed!')
         STAGE = 4
     
-    if STAGE == 4 and \
-        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'training', 'annual_reports'))) > 0 and \
-        len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'training', 'gold_summaries'))) > 0:
+    if STAGE == 4 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'training', 'annual_reports'))) > 0:
         analyze_documents(DATASET_PATH)
-        print('Training documents analyzed!")
+        print('Training documents analyzed!')
     
     if STAGE == 5 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'analysis'))) > 0:
         #distribution = evaluate_distribution(DATASET_PATH)
