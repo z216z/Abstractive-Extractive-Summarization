@@ -3,7 +3,8 @@ import sys
 import json
 import argparse
 from tqdm import tqdm
-from make_extraction_labels import label, split_data, analyze_documents#, evaluate_distribution
+from make_extraction_labels import label, split_data, analyze_documents
+from plot_utils import plot_distributions
 from preprocess_methods import *
 
 stage_help = 'Select the starting analysis stage: \n' \
@@ -56,8 +57,7 @@ def analyze_distribution(DATASET_PATH, LANGUAGE, STAGE):
         print('Training documents analyzed!')
     
     if STAGE == 5 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'analysis'))) > 0:
-        #distribution = evaluate_distribution(DATASET_PATH)
-        print('Distribution plot')
+        plot_distributions(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'analysis'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
