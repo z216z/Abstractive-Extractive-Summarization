@@ -1,5 +1,6 @@
 import os
 import json
+from collections import defaultdict
 import matplotlib.pyplot as plt
 
 def plot_distributions(DATASET_PATH):
