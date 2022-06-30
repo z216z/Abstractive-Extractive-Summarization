@@ -159,7 +159,7 @@ def _get_scores(art_sents, abs_sents):
     indices = np.array(list(range(len(art_sents))))
     scores = np.zeros(indices.size)
     for abst in abs_sents:
-        rouges = np.array(list(map(compute_rouge_l(reference=abst, mode='f'), art_sents)))
+        rouges = np.array(list(map(metric.compute_rouge_l(reference=abst, mode='f'), art_sents)))
         for i in indices:
             scores[i] += rouges[i]
     return scores.tolist()
