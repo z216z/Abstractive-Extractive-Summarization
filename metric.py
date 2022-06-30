@@ -4,6 +4,7 @@ import threading
 import subprocess as sp
 from collections import Counter, deque
 from nltk.translate import bleu_score
+import numpy as np
 
 from cytoolz import concat, curry
 from numba import jit
