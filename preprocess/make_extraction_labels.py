@@ -16,15 +16,15 @@ def _split_words(texts):
     return map(lambda t: t.split(), texts)
 
 @jit
-def get_extract_label(art_sents, abs_sents, inds):
+def get_extract_label_jit(art_sents, abs_sents):
     """ greedily match summary sentences to article sentences"""
     extracted = np.empty(0)
     scores = np.empty(0)
-    indices = inds
+    indices = np.array(list(range(len(art_sents))))
     for abst in abs_sents:
         # for each sentence in the abstract, compute the rouge 
         # with all the sentences in the article:
-        rouges = np.array(list(map(metric.compute_rouge_l(reference=abst, mode='f'),
+        rouges = np.array(list(map(metric.compute_rouge_l_jit(reference=abst, mode='f'),
                           art_sents)))
         # Take the index of the article sentence maximizing the score:
         temp = np.zeros(rouges.size) - 1
@@ -39,25 +39,32 @@ def get_extract_label(art_sents, abs_sents, inds):
     extracted = extracted.astype(int)
     return extracted.tolist(), scores.tolist()
 
-def reduce_article_size(art_sents, abs_sents, top_M):
-    """ greedily extract top article sentences based on summary sentences """
-    arts_indexes = []
-    indices = set(range(len(art_sents)))
+def get_extract_label_original(art_sents, abs_sents):
+    """ greedily match summary sentences to article sentences"""
+    extracted = []
+    scores = []
+    indices = list(range(len(art_sents)))
     for abst in abs_sents:
         # for each sentence in the abstract, compute the rouge 
         # with all the sentences in the article:
         rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
                           art_sents))
         # Take the index of the article sentence maximizing the score:
-        sorted_indices = sorted(indices, reverse=True, key=lambda i: rouges[i])
-        top_indices = sorted_indices[:top_M]
-        arts_indexes += top_indices
-        indices.difference_update(top_indices)
+        ext = max(indices, key=lambda i: rouges[i])
+        indices.remove(ext)
+        extracted.append(ext)
+        scores.append(rouges[ext])
         if not indices:
             break
-    return arts_indexes
+    return extracted, scores
 
-def label(DATASET_PATH, split, art_max_len=None):
+def get_extract_label(art_sents, abs_sents, jit=True):
+    if jit:
+        return get_extract_label_jit(art_sents, abs_sents)
+    else:
+        return get_extract_label_original(art_sents, abs_sents)
+
+def label(DATASET_PATH, split, jit=True):
     data = {}
     path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
     path_summaries = os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries')
@@ -76,17 +83,8 @@ def label(DATASET_PATH, split, art_max_len=None):
                 tokenize = compose(list, _split_words)
                 art_sents = tokenize(article)
                 abs_sents = tokenize(data['abstract'])
-                """
-                if art_max_len is not None and len(article) > art_max_len:
-                    top_M = int(art_max_len/len(data['abstract']))
-                    top_sentences_indexes = reduce_article_size(art_sents, abs_sents, top_M)
-                    data['article'] = [art for i, art in enumerate(article) if i in top_sentences_indexes]
-                    art_sents = tokenize(data['article'])
-                else:
-                """
                 data['article'] = article
-                inds = np.array(list(range(len(art_sents))))
-                extracted, scores = get_extract_label(art_sents, abs_sents, inds)
+                extracted, scores = get_extract_label(art_sents, abs_sents, jit)
                 data['extracted'] = extracted
                 data['score'] = scores
                 with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
