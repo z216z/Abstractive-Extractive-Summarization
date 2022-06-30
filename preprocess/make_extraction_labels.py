@@ -137,9 +137,9 @@ def analyze_documents(DATASET_PATH, split='training'):
                 data['score'] = scores
                 data['bucket'] = bucket_scores
                 data['length'] = len_scores
-                for key, value in scores.items():
+                for key, value in zip(list(range(len(scores))), scores):
                     rows_distribution[key] += value
-                for key, value in bucket_scores.items():
+                for key, value in zip(list(range(1, 101)), bucket_scores):
                     percentage_distribution[key] += value
                     weighted_percentage_distribution[key] += value*len_scores
                 with open(os.path.join(path_analysis, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
@@ -154,23 +154,27 @@ def analyze_documents(DATASET_PATH, split='training'):
     with open(os.path.join(path_analysis, 'weighted_percentage_distribution.json'), 'w') as f:
             json.dump(weighted_percentage_distribution, f, indent=4)
             
+@jit
 def _get_scores(art_sents, abs_sents):
-    scores = defaultdict(lambda: 0)
-    indices = list(range(len(art_sents)))
+    indices = np.array(list(range(len(art_sents))))
+    scores = np.zeros(indices.size)
     for abst in abs_sents:
-        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'), art_sents))
+        rouges = np.array(list(map(compute_rouge_l(reference=abst, mode='f'), art_sents)))
         for i in indices:
             scores[i] += rouges[i]
-    return scores
+    return scores.tolist()
 
+@jit
 def _get_bucket_scores(scores):
-    bucket_scores = defaultdict(lambda: 0)
-    buckets = np.array_split(np.array([k for k in scores.keys()]), 100)
-    for p, bucket in enumerate(buckets, 1):
+    scores = np.array(scores)
+    indices = np.array(list(range(len(scores))))
+    bucket_scores = np.zeros(100)
+    buckets = np.array_split(indices, 100)
+    for p, bucket in enumerate(buckets):
         if len(bucket) > 0:
             for i in bucket:
                 bucket_scores[p] += scores[i]
             bucket_scores[p] = bucket_scores[p]/len(bucket)
         else:
             bucket_scores[p] = 0
-    return bucket_scores
+    return bucket_scores.tolist()
