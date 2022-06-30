@@ -21,7 +21,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
     
     if STAGE == 0:
         if args.max_len is not None:
-            for _, split in enumerate(['training', 'validation']):
+            for split in ['training']: # better not to edit test files
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, 'annual_reports'))):
                     cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len)
         generate_corpus(os.path.join(DATASET_PATH, 'training'), CORPUS_TOKENIZED_PATH, LANGUAGE)
