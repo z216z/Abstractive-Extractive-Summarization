@@ -6,7 +6,7 @@ from collections import Counter, deque
 from nltk.translate import bleu_score
 
 from cytoolz import concat, curry
-
+from numba import jit
 
 def make_n_grams(seq, n):
     """ return iterator """
@@ -47,25 +47,28 @@ def compute_bleu_rouge_n_f1(output, reference, n=1):
     return 2*rouge_n*bleu/(rouge_n+bleu)
 
 #following methods could be useful in pre-processing(?)
+@jit
 def _lcs_dp(a, b):
     """ compute the len dp of lcs"""
-    dp = [[0 for _ in range(0, len(b)+1)]
-          for _ in range(0, len(a)+1)]
-    # dp[i][j]: lcs_len(a[:i], b[:j])
+    dp = np.zeros((len(a)+1, len(b)+1))
     for i in range(1, len(a)+1):
         for j in range(1, len(b)+1):
             if a[i-1] == b[j-1]:
-                dp[i][j] = dp[i-1][j-1] + 1
+                dp[i, j] = dp[i-1, j-1] + 1
+            elif dp[i-1, j] >= dp[i, j-1]:
+                dp[i, j] = dp[i-1, j]
             else:
-                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+                dp[i, j] = dp[i, j-1]
     return dp
 
+@jit
 def _lcs_len(a, b):
     """ compute the length of longest common subsequence between a and b"""
     dp = _lcs_dp(a, b)
-    return dp[-1][-1]
+    return int(dp[-1, -1])
 
 @curry
+@jit
 def compute_rouge_l(output, reference, mode='f'):
     """ compute ROUGE-L for a single pair of summary and reference
     output, reference are list of words
