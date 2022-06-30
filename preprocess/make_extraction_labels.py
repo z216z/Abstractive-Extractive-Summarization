@@ -24,7 +24,7 @@ def get_extract_label(art_sents, abs_sents, inds):
     for abst in abs_sents:
         # for each sentence in the abstract, compute the rouge 
         # with all the sentences in the article:
-        rouges = np.array(list(map(compute_rouge_l(reference=abst, mode='f'),
+        rouges = np.array(list(map(metric.compute_rouge_l(reference=abst, mode='f'),
                           art_sents)))
         # Take the index of the article sentence maximizing the score:
         temp = np.zeros(rouges.size) - 1
