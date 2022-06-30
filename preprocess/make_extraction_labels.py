@@ -10,28 +10,34 @@ from tqdm import tqdm
 import sys
 sys.path.insert(0,'..')
 from NLP_Project import metric
+from numba import jit
 
 def _split_words(texts):
     return map(lambda t: t.split(), texts)
 
-def get_extract_label(art_sents, abs_sents):
+@jit
+def get_extract_label(art_sents, abs_sents, inds):
     """ greedily match summary sentences to article sentences"""
-    extracted = []
-    scores = []
-    indices = list(range(len(art_sents)))
+    extracted = np.empty(0)
+    scores = np.empty(0)
+    indices = inds
     for abst in abs_sents:
         # for each sentence in the abstract, compute the rouge 
         # with all the sentences in the article:
-        rouges = list(map(metric.compute_rouge_l(reference=abst, mode='f'),
-                          art_sents))
+        rouges = np.array(list(map(compute_rouge_l(reference=abst, mode='f'),
+                          art_sents)))
         # Take the index of the article sentence maximizing the score:
-        ext = max(indices, key=lambda i: rouges[i])
-        indices.remove(ext)
-        extracted.append(ext)
-        scores.append(rouges[ext])
-        if not indices:
+        temp = np.zeros(rouges.size) - 1
+        for id in indices:
+            temp[id] = rouges[id]
+        ext = np.argmax(temp)
+        indices = indices[indices != ext]
+        extracted = np.append(extracted, ext)
+        scores = np.append(scores, np.take(rouges, ext))
+        if indices.size == 0:
             break
-    return extracted, scores
+    extracted = extracted.astype(int)
+    return extracted.tolist(), scores.tolist()
 
 def reduce_article_size(art_sents, abs_sents, top_M):
     """ greedily extract top article sentences based on summary sentences """
@@ -79,7 +85,8 @@ def label(DATASET_PATH, split, art_max_len=None):
                 else:
                 """
                 data['article'] = article
-                extracted, scores = get_extract_label(art_sents, abs_sents)
+                inds = np.array(list(range(len(art_sents))))
+                extracted, scores = get_extract_label(art_sents, abs_sents, inds)
                 data['extracted'] = extracted
                 data['score'] = scores
                 with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
