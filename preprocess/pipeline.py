@@ -67,7 +67,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
         for _, split in enumerate(['training', 'validation']):
-            label(DATASET_PATH, split)
+            label(DATASET_PATH, split, args.jit)
             split = 'train' if split == 'training' else 'test'
             print(f'Labels generated for the {split} set!')
         split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
@@ -82,6 +82,7 @@ if __name__ == '__main__':
     parser.add_argument('--stage', type=int, default=0, choices={0, 1, 2, 3, 4, 5}, help=stage_help)
     parser.add_argument('--emb_dim', type=int, default=300, action='store', help='The dimension of word embedding.')
     parser.add_argument('--max_len', type=int, default=1000, action='store', help='Limit the number of sentences in the articles for training purposes.')
+    parser.add_argument('--jit', action="store_true", help='Optimize runtime performance using parallelization.')
     args = parser.parse_args()
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
