@@ -112,9 +112,9 @@ def _get_abstract(path_summaries, file_name, article_len):
 def analyze_documents(DATASET_PATH, split='training'):
     data = {}
     total_len = 0
-    rows_distribution = defaultdict(lambda: 0)
-    percentage_distribution = defaultdict(lambda: 0)
-    weighted_percentage_distribution = defaultdict(lambda: 0)
+    rows_distribution = np.empty(0)
+    percentage_distribution = np.zeros(100)
+    weighted_percentage_distribution = np.zeros(100)
     path_reports = os.path.join(DATASET_PATH, 'preprocess', 'distribution', split, 'annual_reports')
     path_summaries = os.path.join(DATASET_PATH, 'preprocess', 'distribution', split, 'gold_summaries')
     path_analysis = os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'analysis')
@@ -130,42 +130,43 @@ def analyze_documents(DATASET_PATH, split='training'):
                 tokenize = compose(list, _split_words)
                 art_sents = tokenize(article)
                 abs_sents = tokenize(abstract)
-                scores = _get_scores(art_sents, abs_sents)
-                bucket_scores = _get_bucket_scores(scores)
+                scores, rows_distribution = get_scores(art_sents, abs_sents, rows_distribution)
+                bucket_scores, percentage_distribution, weighted_percentage_distribution = get_bucket_scores(scores, percentage_distribution, weighted_percentage_distribution)
                 len_scores = len(scores)
                 total_len += len_scores
                 data['score'] = scores
                 data['bucket'] = bucket_scores
                 data['length'] = len_scores
-                for key, value in zip(list(range(len(scores))), scores):
-                    rows_distribution[key] += value
-                for key, value in zip(list(range(1, 101)), bucket_scores):
-                    percentage_distribution[key] += value
-                    weighted_percentage_distribution[key] += value*len_scores
                 with open(os.path.join(path_analysis, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
                     json.dump(data, f, indent=4)
     
-    for key, value in weighted_percentage_distribution.items():
-        weighted_percentage_distribution[key] = value/total_len
-    with open(os.path.join(path_analysis, 'rows_distribution.json'), 'w') as f:
-            json.dump(rows_distribution, f, indent=4)
-    with open(os.path.join(path_analysis, 'percentage_distribution.json'), 'w') as f:
-            json.dump(percentage_distribution, f, indent=4)
-    with open(os.path.join(path_analysis, 'weighted_percentage_distribution.json'), 'w') as f:
-            json.dump(weighted_percentage_distribution, f, indent=4)
+    weighted_percentage_distribution = weighted_percentage_distribution / total_len
+
+    distribution = {'rows': rows_distribution.tolist(),
+                    'percentage': percentage_distribution.tolist(),
+                    'weighted_percentage': weighted_percentage_distribution.tolist(),
+                    'total_len': total_len}
+
+    with open(os.path.join(path_analysis, 'distribution.json'), 'w') as f:
+        json.dump(distribution, f, indent=4)
             
 @jit
-def _get_scores(art_sents, abs_sents):
+def get_scores(art_sents, abs_sents, rows_distribution):
     indices = np.array(list(range(len(art_sents))))
     scores = np.zeros(indices.size)
-    for abst in abs_sents:
-        rouges = np.array(list(map(metric.compute_rouge_l(reference=abst, mode='f'), art_sents)))
+    for j, abst in enumerate(abs_sents):
+        rouges = np.array(list(map(metric.compute_rouge_l_jit(reference=abst, mode='f'), art_sents)))
         for i in indices:
             scores[i] += rouges[i]
-    return scores.tolist()
+            if i < len(rows_distribution):
+                rows_distribution[i] += rouges[i]
+            else:
+                rows_distribution = np.append(rows_distribution, rouges[i])
+        if j == len(abs_sents) - 1:
+            return scores.tolist(), rows_distribution
 
 @jit
-def _get_bucket_scores(scores):
+def get_bucket_scores(scores, percentage_distribution, weighted_percentage_distribution):
     scores = np.array(scores)
     indices = np.array(list(range(len(scores))))
     bucket_scores = np.zeros(100)
@@ -175,6 +176,9 @@ def _get_bucket_scores(scores):
             for i in bucket:
                 bucket_scores[p] += scores[i]
             bucket_scores[p] = bucket_scores[p]/len(bucket)
+            percentage_distribution[p] += bucket_scores[p]
+            weighted_percentage_distribution[p] += bucket_scores[p] * len(scores)
         else:
             bucket_scores[p] = 0
-    return bucket_scores.tolist()
+        if p == len(buckets) - 1:
+            return bucket_scores.tolist(), percentage_distribution, weighted_percentage_distribution
