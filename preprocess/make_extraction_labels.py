@@ -64,7 +64,7 @@ def get_extract_label(art_sents, abs_sents, jit=True):
     else:
         return get_extract_label_original(art_sents, abs_sents)
 
-def label(DATASET_PATH, split, jit=True):
+def label(DATASET_PATH, split, jit=True, task=None):
     data = {}
     path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
     path_summaries = os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries')
@@ -77,7 +77,7 @@ def label(DATASET_PATH, split, jit=True):
         with open(os.path.join(path_reports, file_name)) as fr:
             article = fr.readlines()
         if len(article) > 0:
-            abstract = _get_abstract(path_summaries, file_name.split('.')[0], len(article))
+            abstract = _get_abstract(path_summaries, file_name.split('.')[0], len(article), task)
             if abstract is not None:
                 data['abstract'] = abstract
                 tokenize = compose(list, _split_words)
@@ -99,9 +99,14 @@ def split_data(DATASET_PATH):
     for file_name in X_val:
         shutil.move(os.path.join(DATASET_PATH, 'train', file_name), val_labels)
 
-def _get_abstract(path_summaries, file_name, article_len):
-    abs_names = [s for s in os.listdir(path_summaries) if s.split('_')[0] == file_name]
-    abs_names.sort()
+def _get_abstract(path_summaries, file_name, article_len, task=None):
+    if task == 'Headline Generation':
+        abs_names = ['{}_1.txt'.format(file_name)]
+    elif task == 'Summarization':
+        abs_names = ['{}_2.txt'.format(file_name)]
+    else:
+        abs_names = [s for s in os.listdir(path_summaries) if s.split('_')[0] == file_name]
+        abs_names.sort()
     for abs_name in abs_names:
         with open(os.path.join(path_summaries, abs_name)) as fr:
             abstract = fr.readlines()
