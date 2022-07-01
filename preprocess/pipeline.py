@@ -99,7 +99,7 @@ if __name__ == '__main__':
     DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
     
     if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess')):
-        for _, split in enumerate(['training', 'validation']):
+        for split in ['training', 'validation', 'test']:
             os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports'))
             os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries'))
         
