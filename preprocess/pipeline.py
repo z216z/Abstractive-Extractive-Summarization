@@ -20,7 +20,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
     CORPUS_FILTERED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'corpus_filtered.txt')
     
     if STAGE == 0:
-        if args.max_len is not None:
+        if args.max_len > 0 and args.data == 'FNS2022':
             for split in ['training']: # better not to edit test files
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, 'annual_reports'))):
                     cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len)
@@ -50,7 +50,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         except ValueError:
             return False
         for split in ['training', 'validation', 'test']:
-            if os.path.exists(os.path.join(DATASET_PATH, split):
+            if os.path.exists(os.path.join(DATASET_PATH, split)):
                 for folder in ['annual_reports', 'gold_summaries']:
                     for file_name in tqdm(os.listdir(os.path.join(DATASET_PATH, split, folder))):
                         tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
@@ -69,7 +69,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
         task = args.task if args.data == 'CNN' else None
         for split in ['training', 'validation', 'test']:
-            if os.path.exists(os.path.join(DATASET_PATH, split):
+            if os.path.exists(os.path.join(DATASET_PATH, split)):
                 label(DATASET_PATH, split, args.jit, task)
                 if args.data == 'FNS2022':
                     split = 'train' if split == 'training' else 'test'
