@@ -6,6 +6,7 @@ from tqdm import tqdm
 from make_extraction_labels import label, split_data
 from preprocess_methods import *
 from train_word2vec import train_word2vec
+import time
 
 stage_help = 'Select the starting preprocess stage: \n' \
 '0 - Generate Corpus \n' \
@@ -61,7 +62,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
         train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH, args.emb_dim)
         print('Word2Vec model saved!')
         STAGE = 5
-    
+    start_time = time.time()
     if STAGE == 5 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'gold_summaries'))) > 0 and \
@@ -74,6 +75,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
                 if args.data == 'FNS2022':
                     split = 'train' if split == 'training' else 'test'
                 print(f'Labels generated for the {split} set!')
+        print("--- %s seconds ---" % (time.time() - start_time))
         if args.data == 'FNS2022':
             split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
             print(f'Labels generated for the validation set!')
