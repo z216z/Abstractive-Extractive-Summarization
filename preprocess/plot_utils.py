@@ -35,19 +35,19 @@ def plot_distributions(DATASET_PATH):
             with open(os.path.join(DATASET_PATH, label)) as f:
                 dist = json.load(f)
             if dist['length'] < 500:
-                for k, v in dist['bucket'].items():
-                    dist_p_ls[k] += v
-                for k, v in dist['score'].items():
+                for k, v in enumerate(dist['bucket']):
+                    dist_p_ls[k+1] += v
+                for k, v in enumerate(dist['score']):
                     dist_r_ls[k] += v
             elif dist['length'] >= 500 and dist['length'] < 1000:
-                for k, v in dist['bucket'].items():
-                    dist_p_md[k] += v
-                for k, v in dist['score'].items():
+                for k, v in enumerate(dist['bucket']):
+                    dist_p_md[k+1] += v
+                for k, v in enumerate(dist['score']):
                     dist_r_md[k] += v
             else:
-                for k, v in dist['bucket'].items():
-                    dist_p_gt[k] += v
-                for k, v in dist['score'].items():
+                for k, v in enumerate(dist['bucket']):
+                    dist_p_gt[k+1] += v
+                for k, v in enumerate(dist['score']):
                     dist_r_gt[k] += v
 
     ax[3].bar(range(len(dist_p_ls)), list(dist_p_ls.values()), align='center')
