@@ -68,7 +68,7 @@ def label(DATASET_PATH, split, jit=True, task=None):
     data = {}
     path_reports = os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports')
     path_summaries = os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries')
-    split = 'train' if split == 'training' else 'test'
+    split = _rename_split_folder(split, task)
     path_labels = os.path.join(DATASET_PATH, 'preprocess', 'labels', split)
     if not os.path.exists(path_labels):
         os.makedirs(path_labels)
@@ -89,6 +89,7 @@ def label(DATASET_PATH, split, jit=True, task=None):
                 data['score'] = scores
                 with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
                     json.dump(data, f, indent=4)
+    return split
 
 def split_data(DATASET_PATH):
     val_labels = os.path.join(DATASET_PATH, 'val')
@@ -113,7 +114,17 @@ def _get_abstract(path_summaries, file_name, article_len, task=None):
         if len(abstract) < article_len and len(abstract) > 0:
             return abstract
     return None
-    
+
+def _rename_split_folder(split, task=None):
+    if split == 'training':
+        return 'train'
+    elif split == 'validation':
+        if task is not None:
+            return 'val'
+        else:
+            return 'test'
+    return split
+
 def analyze_documents(DATASET_PATH, split='training'):
     data = {}
     total_len = 0
