@@ -4,28 +4,24 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 def plot_distributions(DATASET_PATH):
-    percentage_path = os.path.join(DATASET_PATH, 'percentage_distribution.json')
-    row_path = os.path.join(DATASET_PATH, 'rows_distribution.json')
-    weighted_percentage_path = os.path.join(DATASET_PATH, 'weighted_percentage_distribution.json')
-
-    with open(percentage_path) as f:
-        percentage_dist = json.load(f)
-    with open(row_path) as f:
-        row_dist = json.load(f)
-    with open(weighted_percentage_path) as f:
-        weighted_percentage_dist = json.load(f)
+    with open(os.path.join(DATASET_PATH, 'distribution.json')) as f:
+        distribution = json.load(f)
+        
+    row_dist = distribution['rows']                    
+    percentage_dist = distribution['percentage']
+    weighted_percentage_dist = distribution['weighted_percentage']
 
     fig, ax = plt.subplots(9, figsize=(30, 90))
 
-    ax[0].bar(range(len(row_dist)), list(row_dist.values()), align='center')
+    ax[0].bar(range(len(row_dist)), row_dist, align='center')
     ax[0].set_title("Scores distribution by row", fontsize=25)
 
-    ax[1].bar(range(len(percentage_dist)), list(percentage_dist.values()), align='center')
-    ax[1].set_xticks(range(len(percentage_dist)), list(percentage_dist.keys()))
+    ax[1].bar(range(1, 101), percentage_dist, align='center')
+    ax[1].set_xticks(range(1, 101))
     ax[1].set_title("Scores distribution by percentage", fontsize=25)
 
-    ax[2].bar(range(len(weighted_percentage_dist)), list(weighted_percentage_dist.values()), align='center')
-    ax[2].set_xticks(range(len(weighted_percentage_dist)), list(weighted_percentage_dist.keys()))
+    ax[2].bar(range(1, 101), weighted_percentage_dist, align='center')
+    ax[1].set_xticks(range(1, 101))
     ax[2].set_title("Weighted scores distribution by percentage", fontsize=25)
 
     dist_p_ls = defaultdict(lambda: 0)
