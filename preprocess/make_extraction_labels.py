@@ -89,7 +89,7 @@ def label(DATASET_PATH, split, jit=True, task=None):
                 data['score'] = scores
                 with open(os.path.join(path_labels, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
                     json.dump(data, f, indent=4)
-    return split
+    return split, len(os.listdir(path_labels))
 
 def split_data(DATASET_PATH):
     val_labels = os.path.join(DATASET_PATH, 'val')
