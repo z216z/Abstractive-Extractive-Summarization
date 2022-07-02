@@ -7,6 +7,7 @@ from make_extraction_labels import label, split_data
 from preprocess_methods import *
 from train_word2vec import train_word2vec
 import time
+from datetime import timedelta
 
 stage_help = 'Select the starting preprocess stage: \n' \
 '0 - Generate Corpus \n' \
@@ -16,7 +17,9 @@ stage_help = 'Select the starting preprocess stage: \n' \
 '4 - Train Word2Vec \n' \
 '5 - Generate Labels.'
 
-def pipeline(DATASET_PATH, LANGUAGE, STAGE):    
+TASK = None
+
+def pipeline(DATASET_PATH, LANGUAGE, STAGE, splits):    
     CORPUS_TOKENIZED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'corpus_tokenized.txt')
     CORPUS_FILTERED_PATH = os.path.join(DATASET_PATH, 'preprocess', 'corpus_filtered.txt')
     
@@ -50,35 +53,37 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE):
             common_bow = read_json(os.path.join(DATASET_PATH, 'preprocess', 'common_bow.json'))
         except ValueError:
             return False
-        for split in ['training', 'validation', 'test']:
-            if os.path.exists(os.path.join(DATASET_PATH, split)):
-                for folder in ['annual_reports', 'gold_summaries']:
-                    for file_name in tqdm(os.listdir(os.path.join(DATASET_PATH, split, folder))):
-                        tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
-                    print(f'{split} {folder} processed!')
+        for split in splits:
+            for folder in ['annual_reports', 'gold_summaries']:
+                for file_name in tqdm(os.listdir(os.path.join(DATASET_PATH, split, folder))):
+                    tokenizer(os.path.join(DATASET_PATH, split, folder, file_name), os.path.join(DATASET_PATH, 'preprocess', split, folder, file_name), LANGUAGE, common_bow)
+                print(f'{split} {folder} processed!')
         STAGE = 4
     
     if STAGE == 4 and os.path.exists(CORPUS_FILTERED_PATH):
         train_word2vec(DATASET_PATH, CORPUS_FILTERED_PATH, args.emb_dim)
         print('Word2Vec model saved!')
         STAGE = 5
-    start_time = time.time()
+    
     if STAGE == 5 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'training', 'gold_summaries'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'annual_reports'))) > 0 and \
         len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'validation', 'gold_summaries'))) > 0:
-        task = args.task if args.data == 'CNN' else None
-        for split in ['training', 'validation', 'test']:
-            if os.path.exists(os.path.join(DATASET_PATH, split)):
-                label(DATASET_PATH, split, args.jit, task)
-                if args.data == 'FNS2022':
-                    split = 'train' if split == 'training' else 'test'
-                print(f'Labels generated for the {split} set!')
-        print("--- %s seconds ---" % (time.time() - start_time))
+        total_time = time.time()
+        total_labels = 0
+        for split in splits:
+            start_time = time.time()
+            split, labels_number = label(DATASET_PATH, split, args.jit, TASK)
+            elapsed_time = time.time() - start_time
+            total_labels += labels_number
+            print(f'Labels generated for the {split} set!')
+            print(f'Elapsed time: {timedelta(elapsed_time)}')
+            print(f'AVG time to process a label: {elapsed_time/labels_number} s')
         if args.data == 'FNS2022':
             split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
             print(f'Labels generated for the validation set!')
+        print(f'Total elapsed time: {timedelta(time.time() - total_time)}')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -94,15 +99,20 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
+    splits = ['training', 'validation']
     if args.data == 'FNS2022':
         LANGUAGE = args.language
     else:
         LANGUAGE = 'English'
+        TASK = args.task
+        splits.append('test')
     DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
+    if TASK is not None:
+        DATASET_PATH = os.path.join(DATASET_PATH, TASK)
     
     if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess')):
-        for split in ['training', 'validation', 'test']:
+        for split in splits:
             os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports'))
             os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries'))
         
-    pipeline(DATASET_PATH, LANGUAGE, args.stage)
+    pipeline(DATASET_PATH, LANGUAGE, args.stage, splits)
