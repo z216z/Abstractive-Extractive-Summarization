@@ -198,6 +198,7 @@ if __name__ == '__main__':
     )
     parser.add_argument('--data', type=str, default='FNS2022', choices={'FNS2022', 'CNN'}, help='Select the dataset.')
     parser.add_argument('--language', type=str, default='English', choices={'English', 'Greek', 'Spanish'}, help='Select the language if you use FNS2022.')
+    parser.add_argument('--task', type=str, default='Headline Generation', choices={'Headline Generation', 'Summarization'}, help='Select the task to carry over the CNN dataset.')
 
     # model options
     parser.add_argument('--abs_dir', action='store', default='model/abs',
@@ -243,7 +244,7 @@ if __name__ == '__main__':
     if args.data == 'FNS2022':
         LANGUAGE = args.language
     else:
-        LANGUAGE = 'English'
+        LANGUAGE = f'English/{args.task}'
     DATASET_PATH = os.path.join(DATASET_PATH, args.data, LANGUAGE)
     DATA_DIR = os.path.join(DATASET_PATH, 'preprocess', 'labels')
     
