@@ -65,10 +65,10 @@ def plot_distributions(DATASET_PATH):
     ax[6].bar(range(len(dist_r_ls)), list(dist_r_ls.values()), align='center')
     ax[6].set_title("Scores distribution by row of files having less than 500 rows", fontsize=25)
 
-    ax[7].bar(range(len(dist_r_md)), list(dist_r_md.values()), align='center')
+    ax[7].bar(range(500, len(dist_r_md)), list(dist_r_md.values()), align='center')
     ax[7].set_title("Scores distribution by row of files having between 500 and 1000 rows", fontsize=25)
 
-    ax[8].bar(range(len(dist_r_gt)), list(dist_r_gt.values()), align='center')
+    ax[8].bar(range(1000, len(dist_r_gt)), list(dist_r_gt.values()), align='center')
     ax[8].set_title("Scores distribution by row of files having more than 1000 rows", fontsize=25)
 
     plt.show()
