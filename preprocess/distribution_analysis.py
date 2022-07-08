@@ -55,6 +55,7 @@ def analyze_distribution(DATASET_PATH, LANGUAGE, STAGE):
     if STAGE == 4 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'training', 'annual_reports'))) > 0:
         analyze_documents(DATASET_PATH)
         print('Training documents analyzed!')
+        STAGE = 5
     
     if STAGE == 5 and len(os.listdir(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'analysis'))) > 0:
         plot_distributions(os.path.join(DATASET_PATH, 'preprocess', 'distribution', 'analysis'))
