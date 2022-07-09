@@ -25,7 +25,8 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE, splits):
     
     if STAGE == 0:
         if args.max_len > 0 and args.data == 'FNS2022':
-            for split in ['training']: # better not to edit test files
+            folders = splits if args.cut_test_set else ['training']
+            for split in folders:
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, 'annual_reports'))):
                     cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len)
         generate_corpus(os.path.join(DATASET_PATH, 'training'), CORPUS_TOKENIZED_PATH, LANGUAGE)
@@ -95,6 +96,7 @@ if __name__ == '__main__':
     parser.add_argument('--task', type=str, default='Headline Generation', choices={'Headline Generation', 'Summarization'}, help='Select the task to carry over the CNN dataset.')
     parser.add_argument('--emb_dim', type=int, default=300, action='store', help='The dimension of word embedding.')
     parser.add_argument('--max_len', type=int, default=1000, action='store', help='Limit the number of sentences in the articles for training purposes.')
+    parser.add_argument('--cut_test_set', action="store_true", help='Limit the number of sentences for the articles of the test set.')
     parser.add_argument('--jit', action="store_true", help='Optimize runtime performance using parallelization.')
     args = parser.parse_args()
     
