@@ -13,7 +13,7 @@ def plot_distributions(DATASET_PATH):
 
     fig, ax = plt.subplots(9, figsize=(30, 90))
 
-    ax[0].bar(range(len(row_dist)), row_dist, align='center')
+    ax[0].bar(range(len(row_dist)), row_dist, align='center', width=1)
     ax[0].set_title("Scores distribution by row", fontsize=25)
 
     ax[1].bar(range(1, 101), percentage_dist, align='center')
@@ -62,13 +62,13 @@ def plot_distributions(DATASET_PATH):
     ax[5].set_xticks(range(1, 101))
     ax[5].set_title("Scores distribution by percentage of files having more than 1000 rows", fontsize=25)
 
-    ax[6].bar(range(len(dist_r_ls)), list(dist_r_ls.values()), align='center')
+    ax[6].bar(range(len(dist_r_ls)), list(dist_r_ls.values()), align='center', width=1)
     ax[6].set_title("Scores distribution by row of files having less than 500 rows", fontsize=25)
 
-    ax[7].bar(range(len(dist_r_md)), list(dist_r_md.values()), align='center')
+    ax[7].bar(range(len(dist_r_md)), list(dist_r_md.values()), align='center', width=1)
     ax[7].set_title("Scores distribution by row of files having between 500 and 1000 rows", fontsize=25)
 
-    ax[8].bar(range(len(dist_r_gt)), list(dist_r_gt.values()), align='center')
+    ax[8].bar(range(len(dist_r_gt)), list(dist_r_gt.values()), align='center', width=1)
     ax[8].set_title("Scores distribution by row of files having more than 1000 rows", fontsize=25)
 
     plt.show()
