@@ -125,7 +125,7 @@ def _rename_split_folder(split, task=None):
             return 'test'
     return split
 
-def analyze_documents(DATASET_PATH, split='training'):
+def analyze_documents(DATASET_PATH, split='training', top_M=None):
     data = {}
     total_len = 0
     rows_distribution = np.empty(0)
@@ -146,7 +146,7 @@ def analyze_documents(DATASET_PATH, split='training'):
                 tokenize = compose(list, _split_words)
                 art_sents = tokenize(article)
                 abs_sents = tokenize(abstract)
-                scores, rows_distribution = get_scores(art_sents, abs_sents, rows_distribution)
+                scores, rows_distribution = get_scores(art_sents, abs_sents, rows_distribution, top_M)
                 bucket_scores, percentage_distribution, weighted_percentage_distribution = get_bucket_scores(scores, percentage_distribution, weighted_percentage_distribution)
                 len_scores = len(scores)
                 total_len += len_scores
@@ -167,17 +167,23 @@ def analyze_documents(DATASET_PATH, split='training'):
         json.dump(distribution, f, indent=4)
             
 @jit
-def get_scores(art_sents, abs_sents, rows_distribution):
+def get_scores(art_sents, abs_sents, rows_distribution, top_M):
     indices = np.array(list(range(len(art_sents))))
     scores = np.zeros(indices.size)
     for j, abst in enumerate(abs_sents):
         rouges = np.array(list(map(metric.compute_rouge_l_jit(reference=abst, mode='f'), art_sents)))
+        if top_M is not None and len(rouges) > top_M:
+            sorted_rouges = np.sort(rouges)
+            top_M_lower = sorted_rouges[-top_M]
+        else:
+            top_M_lower = -1
         for i in indices:
-            scores[i] += rouges[i]
-            if i < len(rows_distribution):
-                rows_distribution[i] += rouges[i]
-            else:
-                rows_distribution = np.append(rows_distribution, rouges[i])
+            if rouges[i] >= top_M_lower:
+                scores[i] += rouges[i]
+                if i < len(rows_distribution):
+                    rows_distribution[i] += rouges[i]
+                else:
+                    rows_distribution = np.append(rows_distribution, rouges[i])
         if j == len(abs_sents) - 1:
             return scores.tolist(), rows_distribution
 
