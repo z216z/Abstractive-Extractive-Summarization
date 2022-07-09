@@ -28,7 +28,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE, splits):
             folders = splits if args.cut_test_set else ['training']
             for split in folders:
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, 'annual_reports'))):
-                    cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len)
+                    cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len,args.language)
         generate_corpus(os.path.join(DATASET_PATH, 'training'), CORPUS_TOKENIZED_PATH, LANGUAGE)
         print('Corpus generated!')
         STAGE = 1
