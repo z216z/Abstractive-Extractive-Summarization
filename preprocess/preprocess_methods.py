@@ -40,23 +40,37 @@ def filter_corpus(corpus, path_tokenized, common_bow):
                 if len(filtered_line) > 0:
                     fw.write(' '.join(filtered_line) + '\n')
 
-def cut_document(path_raw, max_len):
+def cut_document(path_raw, max_len,language):
     with open(path_raw, 'r+') as fr:
         text = ''
         for line in fr.readlines():
             text += f'{line.strip()} '
         sentences = nltk.sent_tokenize(text)
-        if len(sentences) > max_len:
+        if language=="Greek":
+            max_len= int(20*len(sentences)/100)
             filtered_sentences = []
-            for s in sentences:
+            for i,s in enumerate(sentences):
+              max_i_down=int(10*len(sentences)/100)
+              min_i_up=int(90*len(sentences)/100)
+
                 # delete numbered lists (e.g. '10.', 'A.')
-                if len(s) > 3:
-                    filtered_sentences.append(s)
-                if len(filtered_sentences) == max_len:
-                    break
-            fr.seek(0)
-            fr.write('\n'.join(filtered_sentences))
-            fr.truncate()
+              if i in range(0,max_i_down) or i in range(min_i_up,len(sentences)):
+                  filtered_sentences.append(s)
+              fr.seek(0)
+              fr.write('\n'.join(filtered_sentences))
+              fr.truncate()
+        else:
+           if len(sentences) > max_len:
+              filtered_sentences = []
+              for s in sentences:
+                  # delete numbered lists (e.g. '10.', 'A.')
+                  if len(s) > 3:
+                      filtered_sentences.append(s)
+                  if len(filtered_sentences) == max_len:
+                      break
+              fr.seek(0)
+              fr.write('\n'.join(filtered_sentences))
+              fr.truncate()
                   
 def tokenizer(path_raw, path_tokenized, language, common_bow):
     with open(path_tokenized, 'w') as fw:
