@@ -148,14 +148,14 @@ def analyze_documents_total(DATASET_PATH, split='training'):
                     json.dump(data, f, indent=4)
             
 @jit
-def get_scores_total(art_sents, abs_sents, rows_distribution):
+def get_scores_total(art_sents, abs_sents):
     indices = np.array(list(range(len(art_sents))))
     scores = np.zeros((len(abs_sents), indices.size))
     for j, abst in enumerate(abs_sents):
         rouges = np.array(list(map(metric.compute_rouge_l_jit(reference=abst, mode='f'), art_sents)))
         scores[j] = rouges
         if j == len(abs_sents) - 1:
-            return scores.tolist(), rows_distribution
+            return scores.tolist()
 
 def analyze_documents_final(DATASET_PATH, split='training', top_M=None):
     data = {}
