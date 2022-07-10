@@ -1,6 +1,6 @@
 # Financial Text Summarization using RL policies
 This repository contains the code for our Financial Texts Summarization task, realized for Deep Natural Language Process class(2021-2022).
-Our task was to re-produce the work made by @cite(https://arxiv.org/abs/1805.11080)
+Our task was to re-produce the work made by [Zmander](https://arxiv.org/abs/1805.11080)
 You can
 1. Look at the generated summaries and evaluate the ROUGE/METEOR scores
 2. Run decoding of the pretrained model
