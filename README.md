@@ -31,7 +31,7 @@ This step can be avoided. In fact, if it is not run, the cut is performed using 
 --jit <True if you want to use jit>
 ```
 Note that if the parameter --jit is not specified, the code is run using it.
-<img src="/images/preprocessing.png" alt="Alt text" title="Preprocessing pipeline">
+<img src="/images/preprocess.png" alt="Alt text" title="Preprocessing pipeline">
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
 ```
