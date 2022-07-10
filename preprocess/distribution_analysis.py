@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 from tqdm import tqdm
-from make_extraction_labels import label, split_data, analyze_documents
+from make_extraction_labels import label, split_data, analyze_documents_total, analyze_documents_final
 from plot_utils import plot_distributions
 from preprocess_methods import *
 
