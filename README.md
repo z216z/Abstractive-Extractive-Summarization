@@ -24,46 +24,42 @@ You can download the datasets we used from the following links
 
 ## Execution guide
 In the following, we will give you a suggestion on how to re-run our work. In this way you can check our results and change the training settings if you like.
+## Distribution
+This step can be avoided. In fact, if it is not run, the cut is performed using to first 1000 sentences. If you would like to have a look at the distribution of importance in your documents you should run:
+```
+%run preprocess/distribution_analysis.py --data <DATASET> --language <language> --stage <stage you want to start from> --top_M <top sentences to compute the rouge with>
+--jit <True if you want to use jit>
+```
+Note that if the parameter --jit is not specified, the code is run using it.
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
 ```
-!python preprocess/pipeline.py --data $DATASET --language $lingua --max_len $your_max_doc_cut --stage $stage you want to start from
+!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length > --stage <stage_you_want_to_start_from> --jit <True if you want to use jit>
 ```
 Note: if the parameter --jit is not specified, the code is run using it.
-## Distribution
-If you would like to have a look at the distribution of importance in your documents you should run
-```
-!%run preprocess/distribution_analysis.py --data $DATASET --language $lingua --stage 0
-```
-Note that if the parameter --jit is not specified, the code is run using it.
+
 
 ## Train extractor
 Next step is to train extractor. To do that run the following cell:
-
 ```
-
-!python train_extractor_ml.py --data $DATASET --language $lingua --lstm_hidden 128 --batch 2 --ckpt_freq 100 --debug --max_word 30
+!python train_extractor_ml.py --data <DATASET> --language <language> --lstm_hidden <lstm hidden layers> --batch=<batch size> --ckpt_freq <checkpoint frequency> max_word <max number of words in a sentence>
 ```
 ## Train abstractor
 If you want to train abstractor, following line needs to be executed:
-
 ```
-
-!python train_abstractor.py --data $DATASET --language $lingua --batch 2 --ckpt_freq 500 --n_layer 2 --n_hidden 64
+!python train_abstractor.py --data <DATASET> --language <lingua>-batch <batch_size> --ckpt_freq <checkpoint_frequnce> --n_layer <number of layers> --n_hidden <number of hidden layers>
 ```
 ## Train RL model
 
 Last, but not the least, model to be trained is the Reinforcement Learning's agent. To do that, run the following:
 ```
-
-!python train_full_rl.py --data $DATASET --language $lingua --batch 2
+!python train_full_rl.py --data <DATASET> --language <the language> --batch <batch size>
 ```
 ## Evaluate the model
 
 In the end, evaluate the model using the script decode_full_model.py:
 ```
-
-!python decode_full_model.py --data $DATASET --language $lingua --batch $your_batch_size
+!python decode_full_model.py --data <DATASET> --language <language> --batch <your batch size>
 ```
 
 ### Results
