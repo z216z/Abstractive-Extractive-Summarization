@@ -142,7 +142,7 @@ def analyze_documents_total(DATASET_PATH, split='training'):
                 tokenize = compose(list, _split_words)
                 art_sents = tokenize(article)
                 abs_sents = tokenize(abstract)
-                scores = get_scores(art_sents, abs_sents)
+                scores = get_scores_total(art_sents, abs_sents)
                 data['score'] = scores
                 with open(os.path.join(path_analysis, '{}.json'.format(file_name.split('.')[0])), 'w') as f:
                     json.dump(data, f, indent=4)
