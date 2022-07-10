@@ -31,7 +31,11 @@ This step can be avoided. In fact, if it is not run, the cut is performed using 
 --jit <True if you want to use jit>
 ```
 Note that if the parameter --jit is not specified, the code is run using it.
-<img src="/images/preprocess.png" alt="Alt text" title="Preprocessing pipeline">
+## Preprocessing pipeline
+The following sketch shows an idea of how our preprocessing pipeline works. Note that the documents are cut according to their distribution
+
+<img src="/images/preprocess.jpg" title="Preprocessing pipeline">
+
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
 ```
@@ -41,7 +45,13 @@ Note: if the parameter --jit is not specified, the code is run using it.
 
 
 ## Train extractor
-Next step is to train extractor. To do that run the following cell:
+Next step is to train extractor. The image displays the main idea of its architecture.
+
+<img src="/images/extractor.jpg" alt="Alt text" title="Preprocessing pipeline">
+
+
+
+To train it run the following cell:
 ```
 !python train_extractor_ml.py --data <DATASET> --language <language> --lstm_hidden <lstm hidden layers> --batch <batch size> --ckpt_freq <checkpoint frequency> --max_word <words in a sentence are cut according to this parameter> --max_sent <sentences in a document are cut according to this parameter>
 ```
@@ -52,7 +62,12 @@ If you want to train abstractor, following line needs to be executed:
 ```
 ## Train RL model
 
-Last, but not the least, model to be trained is the Reinforcement Learning's agent. To do that, run the following:
+Last, but not the least, model to be trained is the Reinforcement Learning's agent. The scheme shows the main steps of its functioning idea.
+
+
+<img src="/images/reinforcement.jpg" alt="Alt text" title="Preprocessing pipeline">
+
+If you would like to train it, run the following cell:
 ```
 !python train_full_rl.py --data <DATASET> --language <language> --batch <batch size>
 ```
