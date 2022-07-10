@@ -31,13 +31,16 @@ def a2c_validate(agent, abstractor, loader, reward_fn=compute_rouge_n(n=1)):
                 ext_inds += [(len(ext_sents), len(indices)-1)]
                 ext_sents += [raw_arts[idx.item()]
                               for idx in indices if idx.item() < len(raw_arts)]
-            all_summs = abstractor(ext_sents)
-            for (j, n), abs_sents in zip(ext_inds, abs_batch):
-                summs = all_summs[j:j+n]
-                # python ROUGE-1 (not official evaluation)
-                avg_reward += reward_fn(list(concat(summs)),
-                                              list(concat(abs_sents)))
-                i += 1
+            if len(ext_sents) > 0:
+                all_summs = abstractor(ext_sents)
+                for (j, n), abs_sents in zip(ext_inds, abs_batch):
+                    summs = all_summs[j:j+n]
+                    # python ROUGE-1 (not official evaluation)
+                    avg_reward += reward_fn(list(concat(summs)),
+                                                  list(concat(abs_sents)))
+                    i += 1
+            else: 
+                print('Empty extracted sentence')
     avg_reward /= (i/100)
     print('finished in {}! avg reward: {:.2f}'.format(
         timedelta(seconds=int(time()-start)), avg_reward))
