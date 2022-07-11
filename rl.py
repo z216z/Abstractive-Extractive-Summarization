@@ -26,18 +26,18 @@ def a2c_validate(agent, abstractor, loader, reward_fn=compute_rouge_n(n=1)):
         for art_batch, abs_batch in loader:
             ext_sents = []
             ext_inds = []
-            print("\n-------------------------------------------------------------------------------------")
-            print("Art batch:", art_batch)
-            print("Abs batch:", abs_batch)
+            #print("\n-------------------------------------------------------------------------------------")
+            #print("Art batch:", art_batch)
+            #print("Abs batch:", abs_batch)
             for raw_arts in art_batch:
-                print("Raw_arts:", raw_arts)
+                #print("Raw_arts:", raw_arts)
                 indices = agent(raw_arts)
                 print("Indices:", indices)
                 ext_inds += [(len(ext_sents), len(indices)-1)]
                 print("Ext_inds:", ext_inds)
                 ext_sents += [raw_arts[idx.item()]
                               for idx in indices if idx.item() < len(raw_arts)]
-                print("Ext_sents:", ext_sents)
+                #print("Ext_sents:", ext_sents)
             if len(ext_sents) > 0:
                 all_summs = abstractor(ext_sents)
                 for (j, n), abs_sents in zip(ext_inds, abs_batch):
