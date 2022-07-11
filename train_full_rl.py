@@ -117,7 +117,7 @@ def build_batchers(batch_size):
 
 
 def train(args):
-    ABS_PATH = os.path.join(DATASET_PATH, args.abs_dir)
+    ABS_PATH = os.path.join(DATASET_PATH, args.abs_dir) if args.abs_dir is not None else None
     EXT_PATH = os.path.join(DATASET_PATH, args.ext_dir)
     RL_PATH = os.path.join(DATASET_PATH, args.rl_dir)
 
@@ -132,7 +132,7 @@ def train(args):
         args.gamma, args.reward, args.stop, 'rouge-1'
     )
     train_batcher, val_batcher = build_batchers(args.batch)
-    if args.reward=="avg_rouges":
+    if args.reward == 'avg_rouges':
         reward_fn = (compute_rouge_l+compute_rouge_n(n=1)+compute_rouge_n(n=2))/3
     if args.reward == 'rouge-l':
         reward_fn = compute_rouge_l
@@ -148,16 +148,16 @@ def train(args):
         reward_fn = compute_rouge_n(n=2)
         
     stop_reward_fn = compute_rouge_n(n=1)
-  
+    
+    abs_dir = join(RL_PATH, 'abstractor')
+    os.makedirs(join(abs_dir, 'ckpt'))
+    with open(join(abs_dir, 'meta.json'), 'w') as f:
+        json.dump(net_args['abstractor'], f, indent=4)
     # save abstractor binary
     if args.abs_dir is not None:
         abs_ckpt = {}
         abs_ckpt['state_dict'] = load_best_ckpt(ABS_PATH)
         abs_vocab = pkl.load(open(join(ABS_PATH, 'vocab.pkl'), 'rb'))
-        abs_dir = join(RL_PATH, 'abstractor')
-        os.makedirs(join(abs_dir, 'ckpt'))
-        with open(join(abs_dir, 'meta.json'), 'w') as f:
-            json.dump(net_args['abstractor'], f, indent=4)
         torch.save(abs_ckpt, join(abs_dir, 'ckpt/ckpt-0-0'))
         with open(join(abs_dir, 'vocab.pkl'), 'wb') as f:
             pkl.dump(abs_vocab, f)
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     parser.add_argument('--task', type=str, default='Headline Generation', choices={'Headline Generation', 'Summarization'}, help='Select the task to carry over the CNN dataset.')
 
     # model options
-    parser.add_argument('--abs_dir', action='store', default='model/abs',
+    parser.add_argument('--abs_dir', action='store', default=None,
                         help='pretrained summarizer model root path')
     parser.add_argument('--ext_dir', action='store', default='model/ext',
                         help='root of the extractor model')
