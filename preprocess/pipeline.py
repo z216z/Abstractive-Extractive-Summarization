@@ -112,9 +112,9 @@ if __name__ == '__main__':
     if TASK is not None:
         DATASET_PATH = os.path.join(DATASET_PATH, TASK)
     
-    if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess')):
-        for split in splits:
+    for split in splits:
+        if not os.path.exists(os.path.join(DATASET_PATH, 'preprocess', split)):
             os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'annual_reports'))
             os.makedirs(os.path.join(DATASET_PATH, 'preprocess', split, 'gold_summaries'))
-        
+    
     pipeline(DATASET_PATH, LANGUAGE, args.stage, splits)
