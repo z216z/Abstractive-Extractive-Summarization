@@ -34,7 +34,8 @@ Note that if the parameter --jit is not specified, the code is run using it.
 ## Preprocessing pipeline
 The following sketch shows an idea of how our preprocessing pipeline works. Note that the documents are cut according to their distribution
 
-<img src="/images/preprocess.jpg" title="Preprocessing pipeline">
+<p align="center">
+<img src="/images/preprocess.jpg" title="Preprocessing pipeline" width="500" height="200">
 
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
@@ -47,7 +48,8 @@ Note: if the parameter --jit is not specified, the code is run using it.
 ## Train extractor
 Next step is to train extractor. The image displays the main idea of its architecture.
 
-<img src="/images/extractor.jpg" alt="Alt text" title="Preprocessing pipeline">
+<p align="center">
+<img src="/images/extractor.jpg" alt="Alt text" title="Preprocessing pipeline" width="600" height="300">
 
 
 
@@ -64,8 +66,8 @@ If you want to train abstractor, following line needs to be executed:
 
 Last, but not the least, model to be trained is the Reinforcement Learning's agent. The scheme shows the main steps of its functioning idea.
 
-
-<img src="/images/reinforcement.jpg" alt="Alt text" title="Preprocessing pipeline">
+<p align="center">
+<img src="/images/reinforcement.jpg" alt="Alt text" title="Preprocessing pipeline" width="500" height="300">
 
 If you would like to train it, run the following cell:
 ```
