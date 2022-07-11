@@ -26,9 +26,11 @@ def a2c_validate(agent, abstractor, loader, reward_fn=compute_rouge_n(n=1)):
         for art_batch, abs_batch in loader:
             ext_sents = []
             ext_inds = []
+            print("\n-------------------------------------------------------------------------------------")
+            print("Art batch:", art_batch)
+            print("Abs batch:", abs_batch)
             for raw_arts in art_batch:
-                print("\n-------------------------------------------------------------------------------------")
-                print("Art batch:", art_batch)
+                print("Raw_arts:", raw_arts)
                 indices = agent(raw_arts)
                 print("Indices:", indices)
                 ext_inds += [(len(ext_sents), len(indices)-1)]
