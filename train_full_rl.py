@@ -133,13 +133,13 @@ def train(args):
     )
     train_batcher, val_batcher = build_batchers(args.batch)
     if args.reward == 'avg_rouges':
-        reward_fn = (compute_rouge_l+compute_rouge_n(n=1)+compute_rouge_n(n=2))/3
+        reward_fn = (compute_rouge_l(mode=args.rouge_type)+compute_rouge_n(n=1, mode=args.rouge_type)+compute_rouge_n(n=2, mode=args.rouge_type))/3
     if args.reward == 'rouge-l':
-        reward_fn = compute_rouge_l
+        reward_fn = compute_rouge_l(mode=args.rouge_type)
     elif args.reward == 'rouge-1':
-        reward_fn = compute_rouge_n(n=1)
+        reward_fn = compute_rouge_n(n=1, mode=args.rouge_type)
     elif args.reward == 'rouge-2':
-        reward_fn = compute_rouge_n(n=2)
+        reward_fn = compute_rouge_n(n=2, mode=args.rouge_type)
     elif args.reward == 'bleu_rouge-1_f1':
         reward_fn = compute_bleu_rouge_n_f1(n=1)
     elif args.reward == 'bleu_rouge-2_f1':
@@ -215,6 +215,8 @@ if __name__ == '__main__':
     # training options
     parser.add_argument('--reward', action='store', choices={'rouge-1', 'rouge-2', 'rouge-l', 'avg_rouges', 'bleu_rouge-1_f1', 'bleu_rouge-2_f1'}, default='rouge-2',
                         help='reward function for RL')
+    parser.add_argument('--rouge_type', action='store', choices={'r', 'f'}, default='f',
+                        help='type of rouge we use for RL: recall or F1')
     parser.add_argument('--lr', type=float, action='store', default=1e-4,
                         help='learning rate')
     parser.add_argument('--decay', type=float, action='store', default=0.5,
