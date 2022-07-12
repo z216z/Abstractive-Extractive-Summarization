@@ -28,7 +28,7 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE, splits):
             folders = splits if args.cut_test_set else ['training']
             for split in folders:
                 for i, file_name in enumerate(os.listdir(os.path.join(DATASET_PATH, split, 'annual_reports'))):
-                    cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len,args.language)
+                    cut_document(os.path.join(DATASET_PATH, split, 'annual_reports', file_name), args.max_len, args.language, args.use_distribution)
         generate_corpus(os.path.join(DATASET_PATH, 'training'), CORPUS_TOKENIZED_PATH, LANGUAGE)
         print('Corpus generated!')
         STAGE = 1
@@ -98,6 +98,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_len', type=int, default=1000, action='store', help='Limit the number of sentences in the articles for training purposes.')
     parser.add_argument('--cut_test_set', action="store_true", help='Limit the number of sentences for the articles of the test set.')
     parser.add_argument('--jit', action="store_true", help='Optimize runtime performance using parallelization.')
+    parser.add_argument('--use_distribution', action="store_true", help='Use the distribution analysis to perform the cut of the documents.')
     args = parser.parse_args()
     
     DATASET_PATH = '/content/NLP_Project/Dataset'
