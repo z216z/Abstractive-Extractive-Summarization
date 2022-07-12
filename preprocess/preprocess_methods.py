@@ -101,7 +101,7 @@ def cut_document(path_raw, max_len, language, distribution=False):
                     temp_sentences += sentences[int(len(sentences)/100*94):int(len(sentences)/100*96)]
                     
                     mid_sentences = []
-                    if 500-len(start_sentences)-len(end_sentences) > 0:
+                    if 500-len(start_sentences_important_1)-len(start_sentences_2)-len(start_sentences_important_3)-len(end_sentences) > 0:
                         mid_sentences = temp_sentences[:500-len(start_sentences)-len(end_sentences)]
                     
                     filtered_sentences = start_sentences_important_1 + start_sentences_2 + start_sentences_important_3 + mid_sentences + end_sentences
