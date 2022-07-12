@@ -209,5 +209,4 @@ class ActorCritic(nn.Module):
             scores = self._scr(enc_art, n_abs)
             return outputs, scores
         else:
-            print("SEI NEL POSTO GIUSTO!!!!")
             return outputs
