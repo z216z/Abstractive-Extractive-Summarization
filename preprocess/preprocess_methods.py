@@ -51,54 +51,54 @@ def cut_document(path_raw, max_len, language, distribution=False):
             if language=="English":
                 if len(sentences) < 500:
                     # take first 30%
-                    filtered_sentences = sentences[:len(sentences)/100*30]
+                    filtered_sentences = sentences[:int(len(sentences)/100*30)]
                 elif len(sentences) >= 500 and len(sentences) < 1000:
                     # take first 27%
-                    filtered_sentences = sentences[:len(sentences)/100*27]
+                    filtered_sentences = sentences[:int(len(sentences)/100*27)]
                 else:
                     # take first 3-14% if it's less than 501 rows, 
                     # otherwise take first 4-11% if it's less than 501 rows, 
                     # otherwise take from 4% until we reach 500 rows
-                    temp_sentences = sentences[len(sentences)/100*2:len(sentences)/100*14]
+                    temp_sentences = sentences[int(len(sentences)/100*2):int(len(sentences)/100*14)]
                     if len(temp_sentences) > 500:
-                        temp_sentences = sentences[len(sentences)/100*3:len(sentences)/100*11]
+                        temp_sentences = sentences[int(len(sentences)/100*3):int(len(sentences)/100*11)]
                     if len(temp_sentences) > 500:
-                        temp_sentences = sentences[len(sentences)/100*3:len(sentences)/100*3+500]
+                        temp_sentences = sentences[int(len(sentences)/100*3):int(len(sentences)/100*3+500)]
                     filtered_sentences = temp_sentences
             elif language=="Greek":
                 if len(sentences) < 500:
-                    filtered_sentences += sentences[:len(sentences)/100*4]
-                    filtered_sentences += sentences[len(sentences)/100*10:len(sentences)/100*28]
-                    filtered_sentences += sentences[len(sentences)/100*73:len(sentences)/100*92]
-                    filtered_sentences += sentences[len(sentences)/100*94:]
+                    filtered_sentences += sentences[:int(len(sentences)/100*4)]
+                    filtered_sentences += sentences[int(len(sentences)/100*10):int(len(sentences)/100*28)]
+                    filtered_sentences += sentences[int(len(sentences)/100*73):int(len(sentences)/100*92)]
+                    filtered_sentences += sentences[int(len(sentences)/100*94):]
                 elif len(sentences) >= 500 and len(sentences) < 1000:
-                    filtered_sentences += sentences[:len(sentences)/100*3]
-                    filtered_sentences += sentences[len(sentences)/100*6:len(sentences)/100*7]
-                    filtered_sentences += sentences[len(sentences)/100*8:len(sentences)/100*24]
-                    filtered_sentences += sentences[len(sentences)/100*27:len(sentences)/100*28]
-                    filtered_sentences += sentences[len(sentences)/100*36:len(sentences)/100*37]
-                    filtered_sentences += sentences[len(sentences)/100*51:len(sentences)/100*54]
-                    filtered_sentences += sentences[len(sentences)/100*63:len(sentences)/100*64]
-                    filtered_sentences += sentences[len(sentences)/100*65:len(sentences)/100*66]
-                    filtered_sentences += sentences[len(sentences)/100*67:len(sentences)/100*74]
-                    filtered_sentences += sentences[len(sentences)/100*78:]
+                    filtered_sentences += sentences[:int(len(sentences)/100*3)]
+                    filtered_sentences += sentences[int(len(sentences)/100*6):int(len(sentences)/100*7)]
+                    filtered_sentences += sentences[int(len(sentences)/100*8):int(len(sentences)/100*24)]
+                    filtered_sentences += sentences[int(len(sentences)/100*27):int(len(sentences)/100*28)]
+                    filtered_sentences += sentences[int(len(sentences)/100*36):int(len(sentences)/100*37)]
+                    filtered_sentences += sentences[int(len(sentences)/100*51):int(len(sentences)/100*54)]
+                    filtered_sentences += sentences[int(len(sentences)/100*63):int(len(sentences)/100*64)]
+                    filtered_sentences += sentences[int(len(sentences)/100*65):int(len(sentences)/100*66)]
+                    filtered_sentences += sentences[int(len(sentences)/100*67):int(len(sentences)/100*74)]
+                    filtered_sentences += sentences[int(len(sentences)/100*78):]
                 else:
                     temp_sentences = []
                     # take as sure the first buckets and last buckets, after take the needed sentences to reach 500 sentences
-                    start_sentences_important_1 = sentences[:len(sentences)/100*1]
-                    start_sentences_important_3 = sentences[len(sentences)/100*9:len(sentences)/100*13]
-                    end_sentences = sentences[len(sentences)/100*96:]
+                    start_sentences_important_1 = sentences[:int(len(sentences)/100*1)]
+                    start_sentences_important_3 = sentences[int(len(sentences)/100*9):int(len(sentences)/100*13)]
+                    end_sentences = sentences[int(len(sentences)/100*96):]
                     
-                    start_sentences_2 = sentences[len(sentences)/100*1:len(sentences)/100*5]
-                    start_sentences_2 += sentences[len(sentences)/100*6:len(sentences)/100*9]
-                    temp_sentences += sentences[len(sentences)/100*15:len(sentences)/100*16]
-                    temp_sentences += sentences[len(sentences)/100*35:len(sentences)/100*36]
-                    temp_sentences += sentences[len(sentences)/100*58:len(sentences)/100*62]
-                    temp_sentences += sentences[len(sentences)/100*64:len(sentences)/100*66]
-                    temp_sentences += sentences[len(sentences)/100*69:len(sentences)/100*76]
-                    temp_sentences += sentences[len(sentences)/100*77:len(sentences)/100*87]
-                    temp_sentences += sentences[len(sentences)/100*91:len(sentences)/100*93]
-                    temp_sentences += sentences[len(sentences)/100*94:len(sentences)/100*96]
+                    start_sentences_2 = sentences[int(len(sentences)/100*1):int(len(sentences)/100*5)]
+                    start_sentences_2 += sentences[int(len(sentences)/100*6):int(len(sentences)/100*9)]
+                    temp_sentences += sentences[int(len(sentences)/100*15):int(len(sentences)/100*16)]
+                    temp_sentences += sentences[int(len(sentences)/100*35):int(len(sentences)/100*36)]
+                    temp_sentences += sentences[int(len(sentences)/100*58):int(len(sentences)/100*62)]
+                    temp_sentences += sentences[int(len(sentences)/100*64):int(len(sentences)/100*66)]
+                    temp_sentences += sentences[int(len(sentences)/100*69):int(len(sentences)/100*76)]
+                    temp_sentences += sentences[int(len(sentences)/100*77):int(len(sentences)/100*87)]
+                    temp_sentences += sentences[int(len(sentences)/100*91):int(len(sentences)/100*93)]
+                    temp_sentences += sentences[int(len(sentences)/100*94):int(len(sentences)/100*96)]
                     
                     mid_sentences = []
                     if 500-len(start_sentences)-len(end_sentences) > 0:
@@ -110,9 +110,9 @@ def cut_document(path_raw, max_len, language, distribution=False):
                 # the most important buckets are the first ones, while the others have all the same importance.
                 # In this case we take only the first 500 rows
                 if len(sentences) < 500:
-                    filtered_sentences += sentences[:len(sentences)/100*31]
-                    filtered_sentences += sentences[len(sentences)/100*47:len(sentences)/100*48]
-                    filtered_sentences += sentences[len(sentences)/100*59:len(sentences)/100*60]
+                    filtered_sentences += sentences[:int(len(sentences)/100*31)]
+                    filtered_sentences += sentences[int(len(sentences)/100*47):int(len(sentences)/100*48)]
+                    filtered_sentences += sentences[int(len(sentences)/100*59):int(len(sentences)/100*60)]
                 else:
                     filtered_sentences = sentences[:500]
         else:
