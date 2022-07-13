@@ -79,12 +79,12 @@ def pipeline(DATASET_PATH, LANGUAGE, STAGE, splits):
             elapsed_time = time.time() - start_time
             total_labels += labels_number
             print(f'Labels generated for the {split} set!')
-            print(f'Elapsed time: {timedelta(elapsed_time)}')
+            print(f'Elapsed time: {timedelta(seconds=elapsed_time)}')
             print(f'AVG time to process a label: {elapsed_time/labels_number} s')
         if args.data == 'FNS2022':
             split_data(os.path.join(DATASET_PATH, 'preprocess', 'labels'))
             print(f'Labels generated for the validation set!')
-        print(f'Total elapsed time: {timedelta(time.time() - total_time)}')
+        print(f'Total elapsed time: {timedelta(seconds=time.time()-total_time)}')
       
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
