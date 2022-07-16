@@ -48,10 +48,11 @@ def decode(model_dir, batch_size, max_len, cuda):
 
     # setup loader
     def coll(data):
-        source_lists, target_lists = unzip(data)
+        source_lists, target_lists, names_lists = unzip(data)
         sources = list(filter(bool, map(tokenize(None), source_lists)))
         targets = list(filter(bool, map(tokenize(None), target_lists)))
-        return sources, targets
+        names = list(filter(bool, names_lists))
+        return sources, targets, names
     dataset = DecodeDataset(DATA_DIR, split)
 
     n_data = len(dataset)
@@ -73,7 +74,7 @@ def decode(model_dir, batch_size, max_len, cuda):
     i = 0
     rouges = {'rouge_1': [], 'rouge_2': [], 'rouge_L': []}
     with torch.no_grad():
-        for article_batch, gold_batch in loader:
+        for article_batch, gold_batch, file_name_batch in loader:
             ext_arts = []
             ext_inds = []
             for raw_art_sents in article_batch:
@@ -88,9 +89,9 @@ def decode(model_dir, batch_size, max_len, cuda):
                 ext_arts += [raw_art_sents[i] for i in ext]
             
             dec_outs = abstractor(ext_arts)
-            for (j, n), gold in zip(ext_inds, gold_batch):
+            for (j, n), gold, name in zip(ext_inds, gold_batch, file_name_batch):
                 decoded_sents = [' '.join(dec) for dec in dec_outs[j:j+n]]
-                with open(join(save_path, 'output/{}.txt'.format(i)), 'w') as f:
+                with open(join(save_path, 'output/{}.txt'.format(name.split('.')[0])), 'w') as f:
                     f.write('\n'.join(decoded_sents))
                 i += 1
                 print('{}/{} ({:.2f}%) decoded in {} seconds\r'.format(i, n_data, i/n_data*100,timedelta(seconds=int(time()-start))), end='')
