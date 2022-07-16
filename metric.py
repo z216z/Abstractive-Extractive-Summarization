@@ -40,13 +40,6 @@ def compute_rouge_n(output, reference, n=1, mode='f'):
             score = f_score
     return score
 
-@curry
-def compute_bleu_rouge_n_f1(output, reference, n=1):
-    rouge_n = compute_rouge_n(output, reference, n=n)
-     # compute BLEU-3 score:
-    bleu = bleu_score.sentence_bleu([reference], output, weights=(1/3, 1/3, 1/3), smoothing_function=bleu_score.SmoothingFunction(epsilon=0.01).method1)
-    return 2*rouge_n*bleu/(rouge_n+bleu)
-
 #following methods could be useful in pre-processing(?)
 @jit
 def _lcs_dp_jit(a, b):
