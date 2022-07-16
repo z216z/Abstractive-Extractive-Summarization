@@ -81,27 +81,12 @@ In the end, evaluate the model using the script decode_full_model.py:
 ```
 
 ### Results
-You should get the following results
+You should get the following results if you cut the documents according to their distribution.
 
-Validation set
+| Language | HypPar                              | R-type    | R-1         | R-2         | R-L         |
+|----------|-------------------------------------|-----------|-------------|-------------|-------------|
+| English  | n_hidden=128 n_LSTM=1 batch_size=4  | F1 Recall | 0.332 0.315 | 0.118 0.117 | 0.326 0.309 |
+| Greek    | n_hidden=256 n_LSTM= 2 batch_size=4 | F1 Recall | 0.489 0.227 | 0.311 0.140 | 0.479 0.224 |
+| Spanish  | n_hidden=128 n_LSTM=1 batch_size=4  | F1 Recall | 0.340 0.292 | 0.094 0.081 | 0.334 0.286 |
 
-| Models             | ROUGEs (R-1, R-2, R-L) | METEOR |
-| ------------------ |:----------------------:| ------:|
-| **acl** |
-| rnn-ext + abs + RL | (41.01, 18.20, 38.57)  |  21.10 |
-| + rerank           | (41.74, 18.39, 39.40)  |  20.45 |
-| **new** |
-| rnn-ext + abs + RL | (41.23, 18.45, 38.71)  |  21.14 |
-| + rerank           | (42.06, 18.80, 39.68)  |  20.58 |
-
-Test set
-
-| Models             | ROUGEs (R-1, R-2, R-L) | METEOR |
-| ------------------ |:----------------------:| ------:|
-| **acl** |
-| rnn-ext + abs + RL | (40.03, 17.61, 37.58)  |  21.00 |
-| + rerank           | (40.88, 17.81, 38.53)  |  20.38 |
-| **new** |
-| rnn-ext + abs + RL | (40.41, 17.92, 37.87)  |  21.13 |
-| + rerank           | (41.20, 18.18, 38.79)  |  20.56 |
 
