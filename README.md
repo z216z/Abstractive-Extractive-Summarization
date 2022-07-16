@@ -87,7 +87,7 @@ You should get the following results if you cut the documents according to their
 |----------|-------------------------------------|-----------|-------------|-------------|-------------|
 | English  | n_hidden=128 n_LSTM=1 batch_size=4  | F1 | 0.332 | 0.118 | 0.326 |
 |   |   | Recall | 0.315 | 0.117 | 0.309 |
-| Greek    | n_hidden=256 n_LSTM= 2 batch_size=4 | F1 | 0.489 | 0.311  | 0.479 |
+| Greek    | n_hidden=256 n_LSTM=2 batch_size=4 | F1 | 0.489 | 0.311  | 0.479 |
 |   |   | Recall | 0.227 | 0.140 | 0.224 |
 | Spanish  | n_hidden=128 n_LSTM=1 batch_size=4  | F1 | 0.340 | 0.094 | 0.334 |
 |   |   | Recall | 0.292 | 0.081 | 0.286 |
