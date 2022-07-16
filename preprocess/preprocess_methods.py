@@ -58,12 +58,12 @@ def cut_document(path_raw, max_len, language, distribution=False):
                 else:
                     # take first 3-14% if it's less than 501 rows, 
                     # otherwise take first 4-11% if it's less than 501 rows, 
-                    # otherwise take from 4% until we reach 500 rows
+                    # otherwise take from 4% until we reach max_len rows
                     temp_sentences = sentences[int(len(sentences)/100*2):int(len(sentences)/100*14)]
-                    if len(temp_sentences) > 500:
+                    if len(temp_sentences) > max_len:
                         temp_sentences = sentences[int(len(sentences)/100*3):int(len(sentences)/100*11)]
-                    if len(temp_sentences) > 500:
-                        temp_sentences = sentences[int(len(sentences)/100*3):int(len(sentences)/100*3+500)]
+                    if len(temp_sentences) > max_len:
+                        temp_sentences = sentences[int(len(sentences)/100*3):int(len(sentences)/100*3+max_len)]
                     filtered_sentences = temp_sentences
             elif language=="Greek":
                 if len(sentences) < 500:
@@ -84,7 +84,7 @@ def cut_document(path_raw, max_len, language, distribution=False):
                     filtered_sentences += sentences[int(len(sentences)/100*78):]
                 else:
                     temp_sentences = []
-                    # take as sure the first buckets and last buckets, after take the needed sentences to reach 500 sentences
+                    # take as sure the first buckets and last buckets, after take the needed sentences to reach max_len sentences
                     start_sentences_important_1 = sentences[:int(len(sentences)/100*1)]
                     start_sentences_important_3 = sentences[int(len(sentences)/100*9):int(len(sentences)/100*13)]
                     end_sentences = sentences[int(len(sentences)/100*96):]
@@ -101,7 +101,7 @@ def cut_document(path_raw, max_len, language, distribution=False):
                     temp_sentences += sentences[int(len(sentences)/100*94):int(len(sentences)/100*96)]
                     
                     mid_sentences = []
-                    remaining_length = 500-len(start_sentences_important_1)-len(start_sentences_2)-len(start_sentences_important_3)-len(end_sentences)
+                    remaining_length = max_len-len(start_sentences_important_1)-len(start_sentences_2)-len(start_sentences_important_3)-len(end_sentences)
                     if remaining_length > 0:
                         mid_sentences = temp_sentences[:remaining_length]
                     
@@ -109,13 +109,13 @@ def cut_document(path_raw, max_len, language, distribution=False):
             elif language=="Spanish":
                 # For Spanish, the distribution says that, for files having more than 500 rows,
                 # the most important buckets are the first ones, while the others have all the same importance.
-                # In this case we take only the first 500 rows
+                # In this case we take only the first max_len rows
                 if len(sentences) < 500:
                     filtered_sentences += sentences[:int(len(sentences)/100*31)]
                     filtered_sentences += sentences[int(len(sentences)/100*47):int(len(sentences)/100*48)]
                     filtered_sentences += sentences[int(len(sentences)/100*59):int(len(sentences)/100*60)]
                 else:
-                    filtered_sentences = sentences[:500]
+                    filtered_sentences = sentences[:max_len]
         else:
            if len(sentences) > max_len:
               for s in sentences:
