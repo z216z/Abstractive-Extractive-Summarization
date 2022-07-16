@@ -27,8 +27,7 @@ In the following, we will give you a suggestion on how to re-run our work. In th
 ## Distribution
 This step can be avoided. In fact, if it is not run, the cut is performed using to first 1000 sentences. If you would like to have a look at the distribution of importance in your documents you should run:
 ```
-%run preprocess/distribution_analysis.py --data <DATASET> --language <language> --stage <stage you want to start from> --top_M <top sentences to compute the rouge with>
---jit <True if you want to use jit>
+%run preprocess/distribution_analysis.py --data <DATASET> --language <language> --stage <stage you want to start from> --top_M <top sentences to compute the rouge with> --jit <True if you want to use jit>
 ```
 Note that if the parameter --jit is not specified, the code is run using it.
 ## Preprocessing pipeline
