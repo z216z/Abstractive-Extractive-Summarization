@@ -27,7 +27,7 @@ In the following, we will give you a suggestion on how to re-run our work. In th
 ## Distribution
 This step can be avoided. In fact, if it is not run, the cut is performed using to first 1000 sentences. If you would like to have a look at the distribution of importance in your documents you should run:
 ```
-%run preprocess/distribution_analysis.py --data <DATASET> --language <language> --stage <stage you want to start from> --top_M <top sentences to compute the rouge with> --jit <True if you want to use jit>
+%run preprocess/distribution_analysis.py --data <DATASET> --language <language> --stage <stage you want to start from> --top_M <top sentences to compute the rouge with> --jit <True if you want to use jit, False otherwise>
 ```
 Note that if the parameter --jit is not specified, the code is run using it.
 ## Preprocessing pipeline
@@ -39,7 +39,7 @@ The following sketch shows an idea of how our preprocessing pipeline works. Note
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
 ```
-!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length> --stage <stage_you_want_to_start_from> --jit <True if you want to use jit> --use_distribution < stores true if you want to cut documents according to distribution>
+!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length> --stage <stage_you_want_to_start_from> --jit <True if you want to use jit, False otherwise> --use_distribution < stores true if you want to cut documents according to distribution>
 ```
 Note: if the parameter --jit is not specified, the code is run using it.
 
@@ -54,12 +54,12 @@ Next step is to train extractor. The image displays the main idea of its archite
 
 To train it run the following cell:
 ```
-!python train_extractor_ml.py --data <DATASET> --language <language> --lstm_hidden <lstm hidden layers> --batch <batch size> --ckpt_freq <checkpoint frequency> --max_word <words in a sentence are cut according to this parameter> --max_sent <sentences in a document are cut according to this parameter>
+!python train_extractor_ml.py --data <DATASET> --language <language> --lstm_layer <number of lstms> --lstm_hidden <number of lstm hidden layers> --batch <batch size> --ckpt_freq <checkpoint frequency> --max_word <words in a sentence are cut according to this parameter> --max_sent <sentences in a document are cut according to this parameter>
 ```
 ## Train abstractor
 If you want to train abstractor, following line needs to be executed:
 ```
-!python train_abstractor.py --data <DATASET> --language <language> --batch <batch size> --ckpt_freq <checkpoint_frequnce> --n_layer <number of layers> --n_hidden <number of hidden layers>
+!python train_abstractor.py --data <DATASET> --language <language> --n_layer <number of layers> --n_hidden <number of hidden layers> --batch <batch size> --ckpt_freq <checkpoint_frequnce>
 ```
 ## Train RL model
 
@@ -70,7 +70,7 @@ Last, but not the least, model to be trained is the Reinforcement Learning's age
 
 If you would like to train it, run the following cell:
 ```
-!python train_full_rl.py --data <DATASET> --language <language> --batch <batch size> --abs_dir <directory of the abstractor("model\abs"). If you want to perform ablation study, do not pass this argument>
+!python train_full_rl.py --data <DATASET> --language <language> --batch <batch size> --abs_dir <directory of the abstractor (use "model\abs"). If you want to perform ablation study, do not pass this argument>
 ```
 ## Evaluate the model
 
