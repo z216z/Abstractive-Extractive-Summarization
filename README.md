@@ -40,7 +40,7 @@ The following sketch shows an idea of how our preprocessing pipeline works. Note
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
 ```
-!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length> --stage <stage_you_want_to_start_from> --jit <True if you want to use jit>
+!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length> --stage <stage_you_want_to_start_from> --jit <True if you want to use jit> --use_distribution < stores true if you want to cut documents according to distribution>
 ```
 Note: if the parameter --jit is not specified, the code is run using it.
 
@@ -71,7 +71,7 @@ Last, but not the least, model to be trained is the Reinforcement Learning's age
 
 If you would like to train it, run the following cell:
 ```
-!python train_full_rl.py --data <DATASET> --language <language> --batch <batch size>
+!python train_full_rl.py --data <DATASET> --language <language> --batch <batch size> --abs_dir <directory of the abstractor("model\abs"). If you want to perform ablation study, do not pass this argument>
 ```
 ## Evaluate the model
 
