@@ -39,7 +39,7 @@ The following sketch shows an idea of how our preprocessing pipeline works. Note
 ## Preprocessing
 First of all, you will need to pre-process your data. To do that, you can use the script pipeline.py which is inside the folder called "preprocess". In this way, you will transform you data in ordert to be feasible for the models.
 ```
-!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length> --stage <stage_you_want_to_start_from> --jit <True if you want to use jit, False otherwise> --use_distribution < stores true if you want to cut documents according to distribution>
+!python preprocess/pipeline.py --data <DATASET> --language <language> --max_len <maximum length> --stage <stage_you_want_to_start_from> --jit <True if you want to use jit, False otherwise> --use_distribution <stores true if you want to cut documents according to distribution>
 ```
 Note: if the parameter --jit is not specified, the code is run using it.
 
