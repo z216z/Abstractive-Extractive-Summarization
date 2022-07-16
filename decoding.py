@@ -27,7 +27,7 @@ class DecodeDataset(CnnDmDataset):
         js_data = super().__getitem__(i)
         art_sents = js_data['article']
         abs_sents = js_data['abstract']
-        return art_sents, abs_sents
+        return art_sents, abs_sents, self._file_names[i]
 
 
 def make_html_safe(s):
