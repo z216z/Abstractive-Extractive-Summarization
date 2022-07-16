@@ -68,7 +68,7 @@ Last, but not the least, model to be trained is the Reinforcement Learning's age
 <p align="center">
 <img src="/images/reinforcement.jpg" alt="Alt text" title="Preprocessing pipeline" width="500" height="300">
 
-If you would like to train it, run the following cell:
+Concerning RL, the parameter --abs_dir passes the abstraction directory to RL model. If you like performing our ablation study, do not pass the parameter --abs dir. If you would like to train RL part, run the following cell:
 ```
 !python train_full_rl.py --data <DATASET> --language <language> --batch <batch size> --abs_dir <directory of the abstractor (use "model\abs"). If you want to perform ablation study, do not pass this argument>
 ```
