@@ -213,7 +213,7 @@ if __name__ == '__main__':
                         help='maximun words in a single abstract sentence')
 
     # training options
-    parser.add_argument('--reward', action='store', choices={'rouge-1', 'rouge-2', 'rouge-l', 'avg_rouges', 'bleu_rouge-1_f1', 'bleu_rouge-2_f1'}, default='rouge-2',
+    parser.add_argument('--reward', action='store', choices={'rouge-1', 'rouge-2', 'rouge-l', 'avg_rouges'}, default='rouge-2',
                         help='reward function for RL')
     parser.add_argument('--rouge_type', action='store', choices={'r', 'f'}, default='f',
                         help='type of rouge we use for RL: recall or F1')
