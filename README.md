@@ -23,7 +23,7 @@ You can download the datasets we used from the following links
 2. [CNN Headlines Generation Dataset](https://drive.google.com/file/d/1ReQOXmjatCKuBfSGvdv24Xmju_Qq4ral/view?usp=sharing)
 
 ## Execution guide
-In the following, we will give you a suggestion on how to re-run our work. In this way you can check our results and change the training settings if you like. If you like, a colab notebook with the most salient steps is provided at https://drive.google.com/drive/folders/1OWcFh5EtK0YCWVUTtJZfn5M0_VjHhkku.
+In the following, we will give you a suggestion on how to re-run our work. In this way you can check our results and change the training settings if you like. If you like, a colab notebook with the most salient steps is provided at [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ow_iprH3OKqKGx_sK4l-nc7h_GH72F0L).
 ## Distribution
 This step can be avoided. In fact, if it is not run, the cut is performed using to first 1000 sentences. If you would like to have a look at the distribution of importance in your documents you should run:
 ```
